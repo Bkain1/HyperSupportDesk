@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HyperSupportDesk</title>
+</head>
+<body>
+    <h1>Hello World at <%= time %>!</h1>
+    <button id="ping" onclick="javascript:send('ping');">Ping</button>
+    <p id="output"></p>
+    <script>
+const output = document.getElementById("output");
+const send = async function(buttonId) {
+    const response = await fetch("/log", {
+        method: "POST",
+        headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            id: buttonId
+        })
+    });
+    const result = await response.json();
+    if (result.error) {
+        output.innerHTML = `<strong>Error: ${result.error}</strong>`;
+    } else {
+        output.innerHTML = `Pong at ${result.time}`;
+    }
+};
+    </script>
+</body>
+</html>

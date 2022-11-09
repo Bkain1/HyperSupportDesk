@@ -10,6 +10,17 @@ express()
     .set("views", path.join(__dirname, "views"))
     .set("view engine", "ejs")
     .get("/", async(req, res) => {
-        res.send("Hello World");
+        const args = {
+            time: Date.now()
+        };
+        res.render("pages/index", args);
+    })
+    .post("/log", async(req, res) => {
+        res.set({
+            "Content-Type": "application/json"
+        });
+        res.json({
+            time: Date.now()
+        });
     })
     .listen(PORT, () => console.log(`Listening on ${PORT}`));
