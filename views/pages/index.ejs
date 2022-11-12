@@ -7,12 +7,37 @@
     <title>HyperSupportDesk</title>
 </head>
 <body>
-    <h1>Hello World at <%= time %>!</h1>
-    <button id="ping" onclick="javascript:send('ping');">Ping</button>
+    <h1>Register</h1>
+    <form action="/register" method="POST">
+        <div>
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" required>
+        </div>
+        <div>
+            <label for="email">Email Address</label>
+            <input type="text" id="email" name="email" required>
+        </div>
+        <div>
+            <label for="password">Password</label>
+            <input type="text" id="password" name="password" required>
+        </div>
+        <button type="submit" onclick="onRegister()">Register</button>
+    </form>
     <p id="output"></p>
+    <p>ID / NAME / EMAIL ADDRESS / PASSWORD</p>
+    <% users.forEach(function(u) { %>
+        <p><%= u.id %> / <%= u.name %> / <%= u.email %> / <%= u.password %></p>
+    <% }); %>
+    <!-- <a href="/">Home</a> -->
+    <!-- <a href="/login">Login</a> -->
     <script>
 const output = document.getElementById("output");
-const send = async function(buttonId) {
+
+const onRegister = async function() {
+    const nameText = document.getElementById('name').value;
+    const emailText = document.getElementById('email').value;
+    const passwordText = document.getElementById('password').value;
+
     const response = await fetch("/log", {
         method: "POST",
         headers: {
@@ -20,14 +45,17 @@ const send = async function(buttonId) {
             "Content-Type": "application/json"
         },
         body: JSON.stringify({
-            id: buttonId
+            name: nameText,
+            email: emailText,
+            password: passwordText
         })
     });
     const result = await response.json();
     if (result.error) {
-        output.innerHTML = `<strong>Error: ${result.error}</strong>`;
+        output.innerHTML = `<strong>Error: ${result.error.routine}</strong>`;
     } else {
-        output.innerHTML = `Pong at ${result.time}`;
+        output.innerHTML += `New user created. Refresh to view.`
+        console.log(result.newId);
     }
 };
     </script>

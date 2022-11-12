@@ -17,18 +17,55 @@ express()
     .set("views", path.join(__dirname, "views"))
     .set("view engine", "ejs")
     .get("/", async(req, res) => {
-        const args = {
-            time: Date.now()
-        };
-        res.render("pages/index.ejs", args);
+
+        try {
+            const client = await pool.connect();
+            const usersSql = "SELECT * FROM users ORDER BY id ASC;";
+            const users = await client.query(usersSql);
+            const response = {
+                "users": users ? users.rows : null
+            };
+            res.render("pages/index.ejs", response);
+
+        } catch (err) {
+            console.error(err);
+            res.set({
+                "Content-Type": "application/json"
+            });
+            res.json({
+                error: err
+            });
+        }
     })
+
     .post("/log", async(req, res) => {
         res.set({
             "Content-Type": "application/json"
         });
-        res.json({
-            time: Date.now()
-        });
+
+        try {
+            const client = await pool.connect();
+            const name = req.body.name;
+            const email = req.body.email;
+            const password = req.body.password;
+            const insertSql = `INSERT INTO users (name, email, password)
+                VALUES ($1, $2, $3)
+                RETURNING id as newId;`;
+
+            const insert = await client.query(insertSql, [name, email, password]);
+            
+            const response = {
+                newId: insert ? insert.rows[0] : null
+            };
+            res.json(response);
+            client.release();
+
+        } catch (err) {
+            console.error(err);
+            res.json({
+                error: err
+            });
+        }
     })
 
     .get("/login", (req, res) => {
@@ -44,7 +81,7 @@ express()
     })
 
     .post("/register", (req, res) => {
-        res.body.name
+        
     })
 
     .listen(PORT, () => console.log(`Listening on ${PORT}`));
