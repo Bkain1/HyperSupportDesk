@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const path = require("path");
 const PORT = process.env.PORT || 5163;
+const crypto = require("crypto");
 const { Pool } = require("pg");
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
@@ -76,12 +77,33 @@ express()
 
     })
 
-    .get("/register", (req, res) => {
-        res.render("pages/register.ejs")
+    .get("/register", async (req, res) => {
+        res.render("pages/register.ejs");
     })
 
-    .post("/register", (req, res) => {
-        
+    .post("/register", async (req, res) => {
+        try {
+
+            // Create hash
+            const hash = crypto.createHash('sha256');
+
+            hash.on('readable', () => {
+                
+                const data = hash.read();
+                if (data) {
+                    console.log(data.toString('hex'));
+                }
+            });
+
+            console.log(req.body.password);
+            hash.write(req.body.password);
+            hash.end();
+
+        } catch (err) {
+
+            console.error(err);
+
+        }
     })
 
     .listen(PORT, () => console.log(`Listening on ${PORT}`));

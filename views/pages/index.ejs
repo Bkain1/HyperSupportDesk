@@ -54,7 +54,7 @@ const onRegister = async function() {
     if (result.error) {
         output.innerHTML = `<strong>Error: ${result.error.routine}</strong>`;
     } else {
-        output.innerHTML += `New user created. Refresh to view.`
+        output.innerHTML += `New user created. Refresh to view.`;
         console.log(result.newId);
     }
 };
