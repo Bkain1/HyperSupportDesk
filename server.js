@@ -43,30 +43,6 @@ express()
         res.set({
             "Content-Type": "application/json"
         });
-
-        try {
-            const client = await pool.connect();
-            const name = req.body.name;
-            const email = req.body.email;
-            const password = req.body.password;
-            const insertSql = `INSERT INTO users (name, email, password)
-                VALUES ($1, $2, $3)
-                RETURNING id as newId;`;
-
-            const insert = await client.query(insertSql, [name, email, password]);
-            
-            const response = {
-                newId: insert ? insert.rows[0] : null
-            };
-            res.json(response);
-            client.release();
-
-        } catch (err) {
-            console.error(err);
-            res.json({
-                error: err
-            });
-        }
     })
 
     .get("/login", (req, res) => {
@@ -86,19 +62,24 @@ express()
 
             // Create hash
             const hash = crypto.createHash('sha256');
+            hash.update(req.body.password);
 
-            hash.on('readable', () => {
-                
-                const data = hash.read();
-                if (data) {
-                    console.log(data.toString('hex'));
-                }
-            });
+            const client = await pool.connect();
+            const name = req.body.name;
+            const email = req.body.email;
+            const insertSql = `INSERT INTO users (name, email, password)
+                VALUES ($1, $2, $3)
+                RETURNING id as newId;`;
 
-            console.log(req.body.password);
-            hash.write(req.body.password);
-            hash.end();
+            const insert = await client.query(insertSql, [name, email, hash.digest('hex')]);
+            
+            const response = {
+                newId: insert ? insert.rows[0] : null
+            };
 
+            res.redirect("/");
+            client.release();
+            
         } catch (err) {
 
             console.error(err);
