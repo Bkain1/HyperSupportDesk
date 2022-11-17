@@ -64,20 +64,37 @@ express()
             const hash = crypto.createHash('sha256');
             hash.update(req.body.password);
 
+            // Connect our client to the db
             const client = await pool.connect();
+
+            // Get the variables from the Register form
             const name = req.body.name;
             const email = req.body.email;
-            const insertSql = `INSERT INTO users (name, email, password)
+
+            const selectEmailSql = "SELECT * FROM users WHERE email = $1;";
+            const selectEmail = await client.query(selectEmailSql, [email]);
+
+            // Test if the email is already in the database
+            if (selectEmail.rows.length == 0) {
+                const insertSql = `INSERT INTO users (name, email, password)
                 VALUES ($1, $2, $3)
                 RETURNING id as newId;`;
 
-            const insert = await client.query(insertSql, [name, email, hash.digest('hex')]);
-            
+                // Insert into database
+                await client.query(insertSql, [name, email, hash.digest('hex')]);
+                
+                // Redirect to the login page
+                res.redirect("/login");
+
+            } else {
+                // document.getElementById("errorMessage").innerHTML = `<p>The email "${email}" is already in use.<br>Please enter a new email address.</p>`;
+                res.redirect("/register");
+            }
+
             const response = {
-                newId: insert ? insert.rows[0] : null
+                newId: selectEmail
             };
 
-            res.redirect("/");
             client.release();
             
         } catch (err) {
