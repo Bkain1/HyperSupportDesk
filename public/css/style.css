@@ -1,0 +1,117 @@
+body {
+    color: white;
+    background: lightgreen;
+    font-family: verdana, arial, sans-serif;
+  }
+  
+  /* Main hero content */
+  main {
+    display: block;
+    position: relative;
+    min-width: 400px;
+    min-height: 600px;
+    background: #23addb center 100%;
+    padding: 20px;
+    margin: 0 175px;
+    border-radius: 34px;
+    text-align: center;
+  }
+
+  h1 {
+		font-family: "georgia", "times new roman", serif;
+		text-indent: -9999px;
+	}
+  
+  h2 {
+    font-family: georgia, times-new-roman, serif;
+  }
+  
+  p {
+    color: #000;
+  }
+  
+  a:hover {
+    color: darkgreen;
+  }
+  
+  .container {
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    margin: 50px auto;
+  }
+  
+  footer {
+    font-size: 0.7em;
+    margin-top: 5em;
+  }
+
+  nav ul {
+		font-size: 1.2em;
+		list-style: none;
+		padding-left: 0px;
+		align-content: center
+	}
+
+	nav {
+		font-weight: bold;
+		text-decoration: none;
+		text-align: center;
+		padding: 10px;
+		float: left;
+		width: 160px;
+	}
+
+	nav {
+		float: none;
+		width: auto;
+		padding: 0;
+	}
+
+	nav ul {
+		align-content: center;
+	}
+
+	nav li {
+		display: inline;
+		padding-top: 0;
+		padding-bottom: 0;
+		padding-left: .75em;
+		padding-right: .75em;
+	}
+
+	nav a {
+		font-weight: bold;
+		text-decoration: none;
+    color: darkgreen;
+	}
+
+	nav a:link {
+		color: #76be92;
+	}
+
+	nav a:hover,
+	nav a:focus {
+		color: #76be92;
+	}
+
+	#wrapper {
+		width: 95%;
+		background-color: gray;
+		min-width: 960px;
+		max-width: 2048px;
+		box-shadow: 3px 3px 3px #0d5806;
+		margin: auto;
+		margin-left: auto;
+		margin-right: auto;
+	}
+
+	#hero {
+		min-height: 500px;
+		height: auto;
+		color: #F5F5DC;
+		background-image: url();
+		background-size: 100% 100%;
+		background-repeat: no-repeat;
+		background-position: center;
+	}

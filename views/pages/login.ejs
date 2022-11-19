@@ -1,14 +1,52 @@
-<h1>Login</h1>
-<form action="/login" method="POST">
-    <div>
-        <label for="email">Email Address</label>
-        <input type="text" id="email" name="email" required>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Login</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <div id="wrapper">
+
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/register">Register</a></li>
+            </ul>
+        </nav>
+
+        <header>
+            <h2>Login</h2>
+        </header>
+
+        <h1>Login</h1>
+        <form action="/login" method="POST">
+            <div>
+                <label for="email">Email Address</label>
+                <input type="text" id="email" name="email" required>
+            </div>
+            <div>
+                <label for="password">Password</label>
+                <input type="text" id="password" name="password" required>
+            </div>
+            <button type="submit">Login</button>
+        </form>
+        <span id="messageBox"></span>
+
+        <script>
+            const messageBox = document.getElementById("messageBox");
+            const result = await response.json();
+            if (result.error) {
+
+            } else {
+                output.innerHTML = `<strong>ERROR: Email and Password do not match! Please try again.</strong>`;
+            }
+        </script>
     </div>
-    <div>
-        <label for="password">Password</label>
-        <input type="text" id="password" name="password" required>
-    </div>
-    <button type="Login">Register</button>
-</form>
-<a href="/">Home</a>
-<a href="/register">Register</a>
+</body>
+
+</html>
