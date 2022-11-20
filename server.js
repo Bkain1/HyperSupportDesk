@@ -88,7 +88,7 @@ express()
 
             } else {
                 // document.getElementById("errorMessage").innerHTML = `<p>The email "${email}" is already in use.<br>Please enter a new email address.</p>`;
-                res.redirect("/register");
+                res.render("pages/register.ejs");
             }
 
             const response = {
