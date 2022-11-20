@@ -1,46 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+    <title>HyperSupportDesk</title>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HyperSupportDesk</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
+
+
 <body>
-    <p id="output"></p>
-    <p>ID / NAME / EMAIL ADDRESS / PASSWORD</p>
-    <% users.forEach(function(u) { %>
+    <div id="wrapper">
+
+        <nav>
+            <ul>
+                <li><a href="/register">Register</a></li>
+                <li><a href="/login">Login</a></li>
+            </ul>
+        </nav>
+
+        <header>
+            <h2>Home</h2>
+        </header>
+
+        <p id="output"></p>
+        <p>ID / NAME / EMAIL ADDRESS / PASSWORD</p>
+        <% users.forEach(function(u) { %>
         <p><%= u.id %> / <%= u.name %> / <%= u.email %> / <%= u.password %></p>
-    <% }); %>
-    <a href="/register">Register</a><br>
-    <a href="/login">Login</a>
-    <script>
-const output = document.getElementById("output");
+        <% }); %>
+        <script>
+            const output = document.getElementById("output");
 
-const onRegister = async function() {
-    const nameText = document.getElementById('name').value;
-    const emailText = document.getElementById('email').value;
-    const passwordText = document.getElementById('password').value;
+            const onRegister = async function () {
+                const nameText = document.getElementById('name').value;
+                const emailText = document.getElementById('email').value;
+                const passwordText = document.getElementById('password').value;
 
-    const response = await fetch("/log", {
-        method: "POST",
-        headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            name: nameText,
-            email: emailText,
-            password: passwordText
-        })
-    });
-    const result = await response.json();
-    if (result.error) {
-        output.innerHTML = `<strong>Error: ${result.error.routine}</strong>`;
-    } else {
-        output.innerHTML = "New user created. Refresh to view.";
-    }
-};
-    </script>
+                const response = await fetch("/log", {
+                    method: "POST",
+                    headers: {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        name: nameText,
+                        email: emailText,
+                        password: passwordText
+                    })
+                });
+                const result = await response.json();
+                if (result.error) {
+                    output.innerHTML = `<strong>Error: ${result.error.routine}</strong>`;
+                } else {
+                    output.innerHTML = "New user created. Refresh to view.";
+                }
+            };
+        </script>
+    </div>
 </body>
+
 </html>

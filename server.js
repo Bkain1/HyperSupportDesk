@@ -1,15 +1,19 @@
 require("dotenv").config();
 const express = require("express");
+const app = express();
 const path = require("path");
 const PORT = process.env.PORT || 5163;
 const crypto = require("crypto");
 const { Pool } = require("pg");
+const { execArgv } = require("process");
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: {
         rejectUnauthorized: false
     }
 });
+
+app.use(express.static('public'));
 
 express()
     .use(express.static(path.join(__dirname, "public")))
@@ -49,7 +53,31 @@ express()
         res.render("pages/login.ejs")
     })
 
-    .post("/login", (req, res) => {
+    .post("/login", async (req, res) => {
+        try {
+            // Connect our client to the db
+            const client = await pool.connect();
+            // Get the credentials from the Login form
+            const email = req.body.email;
+            const password = req.body.password;
+
+            const selectEmailSql = "SELECT password FROM users WHERE email = $1;";
+            const selectEmail = await client.query(selectEmailSql, [email]);
+            
+            // Check if password mathces with database
+            if (selectEmail.rows[0].password == password) {
+                // Redirect to the welcome screen
+                res.redirect("/welcome");
+            } else {
+                // document.write("Email and Password do not match! Please try again.");
+                res.redirect("/login");
+            }
+
+        } catch (err) {
+
+            console.error(err);
+
+        }
 
     })
 
@@ -102,6 +130,13 @@ express()
             console.error(err);
 
         }
+    })
+
+    .get("/welcome", async (req, res) => {
+        res.render("pages/welcome.ejs");
+    })
+
+    .post("/welcome", async (req, res) => {
     })
 
     .listen(PORT, () => console.log(`Listening on ${PORT}`));
