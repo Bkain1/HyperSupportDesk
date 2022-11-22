@@ -76,9 +76,13 @@ express()
         } catch (err) {
 
             console.error(err);
-
+            res.set({
+                "Content-Type": "application/json"
+            });
+            res.json({
+                error: err
+            });
         }
-
     })
 
     .get("/register", async (req, res) => {
@@ -86,50 +90,55 @@ express()
     })
 
     .post("/register", async (req, res) => {
-        try {
+            
+        // Connect our client to the db
+        const client = await pool.connect();
+
+        // Get the variables from the Register form
+        const name = req.body.name;
+        const email = req.body.email;
+        const password = req.body.password;
+        const confirm = req.body.confirm;
+
+        const selectEmailSql = "SELECT * FROM users WHERE email = $1;";
+        client.query(selectEmailSql, [email], async(error, result) => {
+            if (error) {
+                console.error(error);
+            }
+
+            // Test if the email is already in the database
+            if (result.rows.length > 0) {
+                return res.render('pages/register.ejs', {
+                    message: 'This email is already in use.'
+                })
+
+            } else if (password !== confirm) {
+                return res.render('pages/register.ejs', {
+                    message: 'Passwords do not match.'
+                })
+            }
 
             // Create hash
             const hash = crypto.createHash('sha256');
-            hash.update(req.body.password);
+            hash.update(password);
 
-            // Connect our client to the db
-            const client = await pool.connect();
+            const insertSql = `INSERT INTO users (name, email, password)
+            VALUES ($1, $2, $3)
+            RETURNING id as newId;`;
 
-            // Get the variables from the Register form
-            const name = req.body.name;
-            const email = req.body.email;
-
-            const selectEmailSql = "SELECT * FROM users WHERE email = $1;";
-            const selectEmail = await client.query(selectEmailSql, [email]);
-
-            // Test if the email is already in the database
-            if (selectEmail.rows.length == 0) {
-                const insertSql = `INSERT INTO users (name, email, password)
-                VALUES ($1, $2, $3)
-                RETURNING id as newId;`;
-
-                // Insert into database
-                await client.query(insertSql, [name, email, hash.digest('hex')]);
-                
-                // Redirect to the login page
-                res.redirect("/login");
-
-            } else {
-                // document.getElementById("errorMessage").innerHTML = `<p>The email "${email}" is already in use.<br>Please enter a new email address.</p>`;
-                res.render("pages/register.ejs");
-            }
-
-            const response = {
-                newId: selectEmail
-            };
-
-            client.release();
+            // Insert into database
+            client.query(insertSql, [name, email, hash.digest('hex')], (err, result) => {
+                if (error) {
+                    console.log(error)
+                } else {
+                    res.render('pages/register.ejs', {
+                        message: 'User registered!'
+                    })
+                }
+            });
             
-        } catch (err) {
-
-            console.error(err);
-
-        }
+            client.release();
+        });
     })
 
     .get("/welcome", async (req, res) => {
