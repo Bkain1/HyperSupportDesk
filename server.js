@@ -67,12 +67,22 @@ express()
             // Check if password mathces with database
             if (selectEmail.rows[0].password == password) {
                 // Redirect to the welcome screen
+
                 res.redirect("/welcome");
             } else {
                 // document.write("Email and Password do not match! Please try again.");
                 res.redirect("/login");
+
+                var popup = require('popups');
+
+                popup.alert({
+                    content: 'Hello!'
+                });
+
             }
 
+            client.release();
+            
         } catch (err) {
 
             console.error(err);

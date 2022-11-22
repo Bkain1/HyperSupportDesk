@@ -36,16 +36,7 @@
             <button type="submit">Login</button>
         </form>
         <span id="messageBox"></span>
-
-        <script>
-            const messageBox = document.getElementById("messageBox");
-            const result = await response.json();
-            if (result.error) {
-
-            } else {
-                output.innerHTML = `<strong>ERROR: Email and Password do not match! Please try again.</strong>`;
-            }
-        </script>
+        
     </div>
 </body>
 
