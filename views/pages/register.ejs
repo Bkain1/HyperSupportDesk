@@ -48,6 +48,12 @@
     <% if (locals.message) { %>
         <p id="message"><%= locals.message %></p>
     <% } %>
+
+    <% if (locals.errors) {
+        for (const [key, value] of Object.entries(locals.errors)) { %>
+            <p id="errors"><%= value %></p>
+        <% }; %>
+    <% } %>
 </div>
 <script>
 

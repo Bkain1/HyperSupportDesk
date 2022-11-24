@@ -2,7 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const path = require("path");
-const PORT = process.env.PORT || 5163;
+const PORT = process.env.PORT || 5001;
 const crypto = require("crypto");
 const { Pool } = require("pg");
 const { execArgv } = require("process");
@@ -12,6 +12,7 @@ const pool = new Pool({
         rejectUnauthorized: false
     }
 });
+const { check, validationResult } = require("express-validator");
 
 app.use(express.static('public'));
 
@@ -95,14 +96,52 @@ express()
         }
     })
 
-    .get("/register", async (req, res) => {
+    .get("/register", async(req, res) => {
         res.render("pages/register.ejs");
     })
 
-    .post("/register", async (req, res) => {
-            
-        // Connect our client to the db
-        const client = await pool.connect();
+    .post("/register", [
+        check('name', 'Please enter a valid name with only letters.')
+            .matches('[a-zA-Z]+')
+            .trim()
+            .escape(),
+        check('email', 'Please enter a valid email address.')
+            .isEmail()
+            .normalizeEmail()
+            .trim()
+            .escape(),
+        check('password')
+            .isLength({ min: 8 })
+            .withMessage('Please enter a password at least 8 digits long.')
+            .matches('[A-Z]')
+            .withMessage('Please enter a password with at least 1 capital letter.')
+            .matches('[0-9]')
+            .withMessage('Please enter a password with at least 1 number.')
+            .matches('[^A-Za-z0-9]')
+            .withMessage('Please enter a password with at least 1 special character.')
+            .trim()
+            .escape(),
+        check('confirm')
+            .trim()
+            .escape()
+    ], (req, res) => {
+
+        const errorFormatter = ({ msg }) => {
+            return `${msg}`;
+        };
+
+        const errors = validationResult(req).formatWith(errorFormatter);
+        if (!errors.isEmpty()) {
+
+            return res.render('pages/register.ejs', { 
+                // errors: errors.array({ onlyFirstError: true })
+                errors: errors.mapped()
+            })
+
+            // return res.render('pages/register.ejs', {
+            //     message: errors
+            // })
+        }
 
         // Get the variables from the Register form
         const name = req.body.name;
@@ -110,45 +149,52 @@ express()
         const password = req.body.password;
         const confirm = req.body.confirm;
 
-        const selectEmailSql = "SELECT * FROM users WHERE email = $1;";
-        client.query(selectEmailSql, [email], async(error, result) => {
-            if (error) {
-                console.error(error);
-            }
+        const connectDb = async () => {
 
-            // Test if the email is already in the database
-            if (result.rows.length > 0) {
-                return res.render('pages/register.ejs', {
-                    message: 'This email is already in use.'
-                })
-
-            } else if (password !== confirm) {
-                return res.render('pages/register.ejs', {
-                    message: 'Passwords do not match.'
-                })
-            }
-
-            // Create hash
-            const hash = crypto.createHash('sha256');
-            hash.update(password);
-
-            const insertSql = `INSERT INTO users (name, email, password)
-            VALUES ($1, $2, $3)
-            RETURNING id as newId;`;
-
-            // Insert into database
-            client.query(insertSql, [name, email, hash.digest('hex')], (err, result) => {
+            // Connect our client to the db
+            const client = await pool.connect();
+            
+            const selectEmailSql = "SELECT * FROM users WHERE email = $1;";
+            client.query(selectEmailSql, [email], async (error, result) => {
                 if (error) {
-                    console.log(error)
-                } else {
-                    res.render('pages/register.ejs', {
-                        message: 'User registered!'
+                    console.error(error);
+                }
+
+                // Test if the email is already in the database
+                if (result.rows.length > 0) {
+                    return res.render('pages/register.ejs', {
+                        message: 'This email is already in use.'
+                    })
+
+                } else if (password !== confirm) {
+                    return res.render('pages/register.ejs', {
+                        message: 'Passwords do not match.'
                     })
                 }
+
+                // Create hash
+                const hash = crypto.createHash('sha256');
+                hash.update(password);
+
+                const insertSql = `INSERT INTO users (name, email, password)
+                VALUES ($1, $2, $3)
+                RETURNING id as newId;`;
+
+                // Insert into database
+                client.query(insertSql, [name, email, hash.digest('hex')], (err, result) => {
+                    if (error) {
+                        console.log(error)
+                    } else {
+                        res.render('pages/register.ejs', {
+                            message: 'User registered!'
+                        })
+                    }
+                });
+                
+                client.release();
             });
-            
-            client.release();
-        });
+        }
+        connectDb();
     })
 
     .get("/welcome", async (req, res) => {
