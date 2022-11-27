@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 
-
 <body>
     <div id="wrapper">
 
@@ -23,39 +22,6 @@
         <header>
             <h2>Home</h2>
         </header>
-
-        <p id="output"></p>
-        <p>ID / NAME / EMAIL ADDRESS / PASSWORD</p>
-        <% users.forEach(function(u) { %>
-        <p><%= u.id %> / <%= u.name %> / <%= u.email %> / <%= u.password %></p>
-        <% }); %>
-        <script>
-const output = document.getElementById("output");
-
-const onRegister = async function() {
-    const nameText = document.getElementById('name').value;
-    const emailText = document.getElementById('email').value;
-    const passwordText = document.getElementById('password').value;
-
-    const response = await fetch("/log", {
-        method: "POST",
-        headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            name: nameText,
-            email: emailText,
-            password: passwordText
-        })
-    });
-    const result = await response.json();
-    if (result.error) {
-        output.innerHTML = `<strong>Error: ${result.error.routine}</strong>`;
-    } else {
-        output.innerHTML = "New user created. Refresh to view.";
-    }
-};
         </script>
     </div>
 </body>

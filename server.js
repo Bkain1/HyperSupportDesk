@@ -23,31 +23,7 @@ express()
     .set("views", path.join(__dirname, "views"))
     .set("view engine", "ejs")
     .get("/", async(req, res) => {
-
-        try {
-            const client = await pool.connect();
-            const usersSql = "SELECT * FROM users ORDER BY id ASC;";
-            const users = await client.query(usersSql);
-            const response = {
-                "users": users ? users.rows : null
-            };
-            res.render("pages/index.ejs", response);
-
-        } catch (err) {
-            console.error(err);
-            res.set({
-                "Content-Type": "application/json"
-            });
-            res.json({
-                error: err
-            });
-        }
-    })
-
-    .post("/log", async(req, res) => {
-        res.set({
-            "Content-Type": "application/json"
-        });
+        res.render("pages/index.ejs");
     })
 
     .get("/login", (req, res) => {
