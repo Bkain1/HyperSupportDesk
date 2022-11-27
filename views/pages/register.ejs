@@ -45,17 +45,26 @@
     </form>
     <a href="/">Home</a>
     <a href="/login">Login</a>
-    <% if (locals.message) { %>
-        <p id="message"><%= locals.message %></p>
-    <% } %>
-
-    <% if (locals.errors) {
-        for (const [key, value] of Object.entries(locals.errors)) { %>
-            <p id="errors"><%= value %></p>
-        <% }; %>
-    <% } %>
+    <p id="output"></p>
 </div>
 <script>
+const output = document.getElementById("output");
+
+<% if (locals.message) { %>
+output.innerHTML = '<%= locals.message %>';
+<% } else if (locals.errors) {
+    for (const [key, value] of Object.entries(locals.errors)) { %>
+output.innerHTML += '<%= value %><br>';
+    <% }; %>
+<% } %>
+
+<% if (locals.name) { %>
+document.getElementById("name").setAttribute('value', '<%= locals.name %>');
+<% } %>
+
+<% if (locals.email) { %>
+document.getElementById("email").setAttribute('value', '<%= locals.email %>');
+<% } %>
 
 </script>
 </body>

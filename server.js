@@ -2,7 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const path = require("path");
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT || 5163;
 const crypto = require("crypto");
 const { Pool } = require("pg");
 const { execArgv } = require("process");
@@ -133,14 +133,10 @@ express()
         const errors = validationResult(req).formatWith(errorFormatter);
         if (!errors.isEmpty()) {
 
-            return res.render('pages/register.ejs', { 
-                // errors: errors.array({ onlyFirstError: true })
+            return res.render('pages/register.ejs', {
                 errors: errors.mapped()
             })
 
-            // return res.render('pages/register.ejs', {
-            //     message: errors
-            // })
         }
 
         // Get the variables from the Register form
@@ -149,7 +145,7 @@ express()
         const password = req.body.password;
         const confirm = req.body.confirm;
 
-        const connectDb = async () => {
+        (async () => {
 
             // Connect our client to the db
             const client = await pool.connect();
@@ -163,12 +159,15 @@ express()
                 // Test if the email is already in the database
                 if (result.rows.length > 0) {
                     return res.render('pages/register.ejs', {
-                        message: 'This email is already in use.'
+                        message: 'This email is already in use.',
+                        name: name
                     })
 
                 } else if (password !== confirm) {
                     return res.render('pages/register.ejs', {
-                        message: 'Passwords do not match.'
+                        message: 'Passwords do not match.',
+                        name: name,
+                        email: email
                     })
                 }
 
@@ -193,8 +192,7 @@ express()
                 
                 client.release();
             });
-        }
-        connectDb();
+        })();
     })
 
     .get("/welcome", async (req, res) => {
