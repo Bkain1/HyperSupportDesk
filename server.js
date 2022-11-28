@@ -50,11 +50,11 @@ express()
                 // document.write("Email and Password do not match! Please try again.");
                 res.redirect("/login");
 
-                var popup = require('popups');
+                // var popup = require('popups');
 
-                popup.alert({
-                    content: 'Hello!'
-                });
+                // popup.alert({
+                //     content: 'Hello!'
+                // });
 
             }
 
