@@ -1,117 +1,172 @@
 body {
-    color: white;
-    background: lightgreen;
-    font-family: verdana, arial, sans-serif;
-  }
-  
-  /* Main hero content */
-  main {
-    display: block;
-    position: relative;
-    min-width: 400px;
-    min-height: 600px;
-    background: #23addb center 100%;
-    padding: 20px;
-    margin: 0 175px;
-    border-radius: 34px;
-    text-align: center;
-  }
+	color: white;
+	background: lightgreen;
+	font-family: verdana, arial, sans-serif;
+}
 
-  h1 {
-		font-family: "georgia", "times new roman", serif;
-		text-indent: -9999px;
-	}
-  
-  h2 {
-    font-family: georgia, times-new-roman, serif;
-  }
-  
-  p {
-    color: #000;
-  }
-  
-  a:hover {
-    color: darkgreen;
-  }
-  
-  .container {
-    position: absolute;
-    width: 400px;
-    height: 400px;
-    margin: 50px auto;
-  }
-  
-  footer {
-    font-size: 0.7em;
-    margin-top: 5em;
-  }
+/* Main hero content */
+main {
+	display: block;
+	position: relative;
+	min-width: 400px;
+	min-height: 600px;
+	padding: 20px;
+	margin: 0 0px;
+	text-align: center;
+	color: #90ee90;
+}
 
-  nav ul {
-		font-size: 1.2em;
-		list-style: none;
-		padding-left: 0px;
-		align-content: center
-	}
+h1 {
+	font-family: "georgia", "times new roman", serif;
+	text-indent: -9999px;
+}
 
-	nav {
-		font-weight: bold;
-		text-decoration: none;
-		text-align: center;
-		padding: 10px;
-		float: left;
-		width: 160px;
-	}
+h2 {
+	font-family: georgia, times-new-roman, serif;
+	font-size: 25px;
+}
 
-	nav {
-		float: none;
-		width: auto;
-		padding: 0;
-	}
+p {
+	color: #000;
+	font-size: 18px;
+}
 
-	nav ul {
-		align-content: center;
-	}
+a:hover {
+	color: darkgreen;
+}
+
+.container {
+	position: absolute;
+	width: 400px;
+	height: 400px;
+	margin: 50px auto;
+}
+
+footer {
+	font-size: 0.7em;
+	margin-top: 5em;
+}
+
+nav ul {
+	font-size: 1.2em;
+	list-style: none;
+	padding-left: 0px;
+	align-content: center;
+	padding-top: 3px;
+}
+
+nav {
+	font-weight: bold;
+	text-decoration: none;
+	text-align: right;
+	padding: 0;
+	float: none;
+	width: auto;
+}
+
+nav li {
+	display: inline;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	padding-left: 1.25em;
+	padding-right: 1.25em;
+	margin-left: 20px;
+	border-width: 3px;
+	border-style: solid;
+	border-color: darkgreen;
+}
+
+li {
+	padding-top: 10px;
+	padding-bottom: 10px;
+	padding-left: 0em;
+	padding-right: 0em;
+	margin-left: 0px;
+	text-align: left;
+}
+
+dl {
+	color: #000;
+	text-align: left;
+	font-size: 20px;
+}
+
+nav a {
+	font-weight: bold;
+	text-decoration: none;
+	color: darkgreen;
+	font-size: 30px;
+}
+
+nav a:link {
+	color: darkgreen;
+}
+
+nav a:hover,
+nav a:focus {
+	color: #11ef21;
+}
+
+#wrapper {
+	width: 95%;
+	background-color: gray;
+	min-width: 1300px;
+	max-width: 2048px;
+	box-shadow: 3px 3px 3px #0d5806;
+	margin: auto;
+	margin-left: auto;
+	margin-right: auto;
+	align-content: center;
+}
+
+.center {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	width: 50%;
+}
+
+img {
+	width: 640;
+	height: 65px;
+}
+
+
+@media only screen and (max-width: 96em) {
 
 	nav li {
 		display: inline;
-		padding-top: 0;
-		padding-bottom: 0;
-		padding-left: .75em;
-		padding-right: .75em;
+		padding-top: 10px;
+		padding-bottom: 10px;
+		padding-left: 0em;
+		padding-right: 0em;
+		margin-left: 0px;
+		border-width: 3px;
+		border-style: solid;
+		border-color: darkgreen;
+	}
+
+	img {
+		align-self: center;
+		display: block;
+		margin-left: auto;
+		margin-right: auto;
 	}
 
 	nav a {
 		font-weight: bold;
 		text-decoration: none;
-    color: darkgreen;
+		color: darkgreen;
+		font-size: 30px;
 	}
 
-	nav a:link {
-		color: #76be92;
+	main {
+		display: block;
+		position: relative;
+		min-width: 400px;
+		min-height: 600px;
+		text-align: center;
+		color: #90ee90;
 	}
 
-	nav a:hover,
-	nav a:focus {
-		color: #76be92;
-	}
-
-	#wrapper {
-		width: 95%;
-		background-color: gray;
-		min-width: 960px;
-		max-width: 2048px;
-		box-shadow: 3px 3px 3px #0d5806;
-		margin: auto;
-		margin-left: auto;
-		margin-right: auto;
-	}
-
-	#hero {
-		min-height: 500px;
-		height: auto;
-		color: #F5F5DC;
-		background-image: url();
-		background-size: 100% 100%;
-		background-repeat: no-repeat;
-		background-position: center;
-	}
+}

@@ -178,4 +178,18 @@ express()
     .post("/welcome", async (req, res) => {
     })
 
+    .get("/about", async (req, res) => {
+        res.render("pages/about.ejs");
+    })
+
+    .post("/about", async (req, res) => {
+    })
+
+    .get("/quickFixes", async (req, res) => {
+        res.render("pages/quickFixes.ejs");
+    })
+
+    .post("/quickFixes", async (req, res) => {
+    })
+
     .listen(PORT, () => console.log(`Listening on ${PORT}`));

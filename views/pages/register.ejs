@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>Register</title>
+    <title>HSD - Register</title>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,18 +12,22 @@
 
 <div id="wrapper">
 
+    <header>
+        <img src="images/HSDLogo.png" alt="HyperSupportDesk Logo" align="left">
+    </header>
+
     <nav>
         <ul>
             <li><a href="/">Home</a></li>
+            <li><a href="/about">About Us</a></li>
             <li><a href="/login">Login</a></li>
+            <li><a href="/quickFixes">QuickFixes</a></li>
         </ul>
     </nav>
 
-    <header>
-        <h2>Register</h2>
-    </header>
+    <main id="hero">
+        <h2>HyperSupportDesk - Register</h2><br>
 
-    <h1>Register</h1>
     <form action="/register" method="POST">
         <div>
             <label for="name">Name</label>
@@ -43,10 +47,10 @@
         </div>
         <button type="submit">Register</button>
     </form>
-    <a href="/">Home</a>
-    <a href="/login">Login</a>
     <p id="output"></p>
 </div>
+
+</main>
 <script>
 const output = document.getElementById("output");
 
