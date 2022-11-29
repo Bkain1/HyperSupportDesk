@@ -39,11 +39,14 @@
             </div>
             <button type="submit">Login</button>
         </form>
-        <span id="messageBox"></span>
-
+        <p id="output"></p>
     </main>
-        
     </div>
 </body>
+<script>
+<% if (locals.message) { %>
+output.innerHTML = '<%= locals.message %>';
+<% } %>
+</script>
 
 </html>

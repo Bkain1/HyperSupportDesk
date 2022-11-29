@@ -56,7 +56,7 @@ express()
             
             // Check if password mathces with database
             // Note: Database stored the user's HASHED password.
-            if (selectEmail.rows[0].password == hash.digest('hex')) {
+            if (selectEmail.rows[0] && selectEmail.rows[0].password == hash.digest('hex')) {
 
                 req.session.name = selectEmail.rows[0].name;
                 req.session.email = email;
@@ -66,7 +66,9 @@ express()
                 res.render("pages/welcome.ejs");
             } else {
                 // document.write("Email and Password do not match! Please try again.");
-                res.redirect("/login");
+                res.render("pages/login.ejs", {
+                    message: "Invalid login. Please try again."
+                });
 
                 // var popup = require('popups');
 
