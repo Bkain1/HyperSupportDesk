@@ -5,6 +5,7 @@ const path = require("path");
 const PORT = process.env.PORT || 5163;
 const crypto = require("crypto");
 const { Pool } = require("pg");
+const session = require("express-session");
 const { execArgv } = require("process");
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
@@ -21,7 +22,15 @@ app.use(express.static('public'));
 express()
     .use(express.static(path.join(__dirname, "public")))
     .use(express.json())
-    .use(express.urlencoded({ extended: true}))
+    .use(express.urlencoded({ extended: true }))
+    .use(session({
+        // Don't store a secret like this EVER in code. This should
+        // be something kept safe, but because we are using this only for
+        // a class, this is fine.
+        secret: "DontDoThisInProductionCode",
+        resave: false,
+        saveUninitialized: true
+    }))
     .set("views", path.join(__dirname, "views"))
     .set("view engine", "ejs")
     .get("/", async(req, res) => {
@@ -40,14 +49,23 @@ express()
             const email = req.body.email;
             const password = req.body.password;
 
-            const selectEmailSql = "SELECT password FROM users WHERE email = $1;";
+            // hash the password being taken in
+            const hash = crypto.createHash('sha256');
+            hash.update(password);
+
+            const selectEmailSql = "SELECT name, password, usertype FROM users WHERE email = $1;";
             const selectEmail = await client.query(selectEmailSql, [email]);
             
             // Check if password mathces with database
-            if (selectEmail.rows[0].password == password) {
-                // Redirect to the welcome screen
+            // Note: Database stored the user's HASHED password.
+            if (selectEmail.rows[0].password == hash.digest('hex')) {
 
-                res.redirect("/welcome");
+                req.session.name = selectEmail.rows[0].name;
+                req.session.email = email;
+                req.session.usertype = selectEmail.rows[0].usertype;
+
+                // Redirect to the welcome screen
+                res.render("pages/welcome.ejs");
             } else {
                 // document.write("Email and Password do not match! Please try again.");
                 res.redirect("/login");
@@ -78,6 +96,7 @@ express()
         res.render("pages/register.ejs");
     })
 
+    // Registration validators and sanitizers
     .post("/register", [
         check('name', 'Please enter a valid name with only letters.')
             .matches('[a-zA-Z]+')
@@ -171,8 +190,6 @@ express()
                 client.release();
             });
         })();
-
-        
     })
 
     .get("/welcome", async (req, res) => {
@@ -182,7 +199,7 @@ express()
             const ticketsSql = "SELECT * FROM tickets ORDER BY id ASC;";
             const tickets = await client.query(ticketsSql);
             const response = {
-                "tickets":tickets ? tickets.rows : null
+                "tickets": tickets ? tickets.rows : null
             };
             res.render("pages/welcome.ejs", response);
 
