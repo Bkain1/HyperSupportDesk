@@ -13,8 +13,6 @@ const pool = new Pool({
     }
 });
 const { check, validationResult } = require("express-validator");
-const bodyParser = require("body-parser");
-app.use(bodyParser.json());
 
 app.use(express.static('public'));
 
@@ -200,16 +198,8 @@ express()
     
 
     .post("/welcome", async (req, res) => {
-        client.query(`Select * from tickets`, (err, result)=>{
-            if(!err){
-                res.send(result.rows);
-            }
-        });
-       client.end;
-       client.connect();
+
     })
-    
-   
 
     .get("/about", async (req, res) => {
         res.render("pages/about.ejs");

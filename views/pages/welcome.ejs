@@ -29,7 +29,7 @@
         <main id="hero">
             <h2>HyperSupportDesk - Welcome</h2>
             <p>You successfully logged in!</p>
-        </main>
+        
 
 
         <p id="output"></p>
@@ -37,6 +37,8 @@
         <% tickets.forEach(function(t) { %>
         <p><%= t.id %> / <%= t.title %> / <%= t.description %> / <%= t.author %> / <%= t.priority %> / <%= t.status %></p>
         <% }); %>
+        </main>
+
         <script>
         const output = document.getElementById("output");
 
@@ -52,15 +54,7 @@
             "Accept": "application/json",
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({
-            title: titleText,
-            description: descriptionText,
-            author: authorText,
-            priority: priorityText,
-            status: statusText
-
-
-        })
+     
     });
     const result = await response.json();
     if (result.error) {
