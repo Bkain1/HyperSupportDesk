@@ -13,6 +13,8 @@ const pool = new Pool({
     }
 });
 const { check, validationResult } = require("express-validator");
+const bodyParser = require("body-parser");
+app.use(bodyParser.json());
 
 app.use(express.static('public'));
 
@@ -169,14 +171,45 @@ express()
                 client.release();
             });
         })();
+
+        
     })
 
     .get("/welcome", async (req, res) => {
-        res.render("pages/welcome.ejs");
+       
+        try {
+            const client = await pool.connect();
+            const ticketsSql = "SELECT * FROM tickets ORDER BY id ASC;";
+            const tickets = await client.query(ticketsSql);
+            const response = {
+                "tickets":tickets ? tickets.rows : null
+            };
+            res.render("pages/welcome.ejs", response);
+
+        } catch (err) {
+            console.error(err);
+            res.set({
+                "Content-Type": "application/json"
+            });
+            res.json({
+                error: err
+            });
+        }
+    
     })
+    
 
     .post("/welcome", async (req, res) => {
+        client.query(`Select * from tickets`, (err, result)=>{
+            if(!err){
+                res.send(result.rows);
+            }
+        });
+       client.end;
+       client.connect();
     })
+    
+   
 
     .get("/about", async (req, res) => {
         res.render("pages/about.ejs");

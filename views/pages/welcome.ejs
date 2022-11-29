@@ -31,6 +31,46 @@
             <p>You successfully logged in!</p>
         </main>
 
+
+        <p id="output"></p>
+        <p>ID / TITLE / DESCRIPTION / AUTHOR / PRIORITY / STATUS</p>
+        <% tickets.forEach(function(t) { %>
+        <p><%= t.id %> / <%= t.title %> / <%= t.description %> / <%= t.author %> / <%= t.priority %> / <%= t.status %></p>
+        <% }); %>
+        <script>
+        const output = document.getElementById("output");
+
+    const onRegister = async function() {
+    const titleText = document.getElementById('title').value;
+    const descriptionText = document.getElementById('description').value;
+    const authorText = document.getElementById('author').value;
+    const priorityText = document.getElementById('priority').value;
+    const statusText = document.getElementById('status').value;
+    const response = await fetch("/log", {
+        method: "POST",
+        headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            title: titleText,
+            description: descriptionText,
+            author: authorText,
+            priority: priorityText,
+            status: statusText
+
+
+        })
+    });
+    const result = await response.json();
+    if (result.error) {
+        output.innerHTML = `<strong>Error: ${result.error.routine}</strong>`;
+    } else {
+        output.innerHTML = "Current Tickets.";
+    }
+    };
+        </script>
+
     </div>
 
 </body>
