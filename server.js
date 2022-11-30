@@ -58,23 +58,19 @@ express()
             // Note: Database stored the user's HASHED password.
             if (selectEmail.rows[0] && selectEmail.rows[0].password == hash.digest('hex')) {
 
-                req.session.name = selectEmail.rows[0].name;
-                req.session.email = email;
-                req.session.usertype = selectEmail.rows[0].usertype;
+                req.session.user = {
+                    name: selectEmail.rows[0].name,
+                    email: email,
+                    usertype: selectEmail.rows[0].usertype
+                }
 
                 // Redirect to the welcome screen
-                res.render("pages/welcome.ejs");
+                res.redirect("/welcome");
             } else {
-                // document.write("Email and Password do not match! Please try again.");
+                
                 res.render("pages/login.ejs", {
                     message: "Invalid login. Please try again."
                 });
-
-                // var popup = require('popups');
-
-                // popup.alert({
-                //     content: 'Hello!'
-                // });
 
             }
 
@@ -193,28 +189,42 @@ express()
     })
 
     .get("/welcome", async (req, res) => {
-       
-        try {
-            const client = await pool.connect();
-            const ticketsSql = "SELECT * FROM tickets ORDER BY id ASC;";
-            const tickets = await client.query(ticketsSql);
-            const response = {
-                "tickets": tickets ? tickets.rows : null
-            };
-            res.render("pages/welcome.ejs", response);
+        // Test if the user is logged in
+       if (req.session.user) {
 
-        } catch (err) {
-            console.error(err);
-            res.set({
-                "Content-Type": "application/json"
-            });
-            res.json({
-                error: err
-            });
-        }
+        // Render the page with the user information
+        res.render("pages/welcome.ejs", {
+            user: req.session.user
+        });
+
+       } else {
+
+        // Redirect the user
+        res.render("pages/login.ejs", {
+            message: "Please login first."
+        });
+
+       }
+        // try {
+        //     const client = await pool.connect();
+        //     const ticketsSql = "SELECT * FROM tickets ORDER BY id ASC;";
+        //     const tickets = await client.query(ticketsSql);
+        //     const response = {
+        //         "tickets": tickets ? tickets.rows : null
+        //     };
+        //     res.render("pages/welcome.ejs", response);
+
+        // } catch (err) {
+        //     console.error(err);
+        //     res.set({
+        //         "Content-Type": "application/json"
+        //     });
+        //     res.json({
+        //         error: err
+        //     });
+        // }
     
     })
-    
 
     .post("/welcome", async (req, res) => {
 
