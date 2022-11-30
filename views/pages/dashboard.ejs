@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>HSD - Dashboard</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+
+<body>
+    <div id="wrapper">
+
+        <header>
+            <img src="images/HSDLogo.png" alt="HyperSupportDesk Logo" align="left">
+        </header>
+
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/about">About Us</a></li>
+                <li><a href="/login">Login</a></li>
+                <li><a href="/quickFixes">QuickFixes</a></li>
+            </ul>
+        </nav>
+
+        <main id="hero">
+            <h2>HyperSupportDesk - Dashboard</h2><br>
+
+            <p>You can now create a ticket.</p>
+
+            <!-- Add Ticket UI Here -->
+        
+
+
+        <p id="output"></p><br><br><br>
+        <p>View Tickets</p>
+        <div class="center">
+        <table style="width:auto" id="ticket">
+            <tr>
+                <td>ID</td>
+                <td>TITLE</td>
+                <td>DESCRIPTION</td>
+                <td>AUTHOR</td>
+                <td>PRIORITY</td>
+                <td>STATUS</td>
+            </tr>
+        <% tickets.forEach(function(t) { %>
+            <tr>
+                <td><%= t.id %></td>
+                <td><%= t.title %></td>
+                <td><%= t.description %></td>
+                <td><%= t.author %></td>
+                <td><%= t.priority %></td>
+                <td><%= t.status %></td>
+            </tr>
+        <% }); %>
+        </table>
+    </div>
+
+
+        </main>
+
+        <script>
+        const output = document.getElementById("output");
+
+    const onRegister = async function() {
+    const titleText = document.getElementById('title').value;
+    const descriptionText = document.getElementById('description').value;
+    const authorText = document.getElementById('author').value;
+    const priorityText = document.getElementById('priority').value;
+    const statusText = document.getElementById('status').value;
+    const response = await fetch("/log", {
+        method: "POST",
+        headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+        },
+     
+    });
+    const result = await response.json();
+    if (result.error) {
+        output.innerHTML = `<strong>Error: ${result.error.routine}</strong>`;
+    } else {
+        output.innerHTML = "Current Tickets.";
+    }
+    };
+        </script>
+
+    </div>
+
+</body>
+
+</html>

@@ -230,6 +230,32 @@ express()
 
     })
 
+    .get("/dashboard", async (req, res) => {
+       
+        try {
+            const client = await pool.connect();
+            const ticketsSql = "SELECT * FROM tickets ORDER BY id ASC;";
+            const tickets = await client.query(ticketsSql);
+            const response = {
+                "tickets":tickets ? tickets.rows : null
+            };
+            res.render("pages/dashboard.ejs", response);
+
+        } catch (err) {
+            console.error(err);
+            res.set({
+                "Content-Type": "application/json"
+            });
+            res.json({
+                error: err
+            });
+        }
+    
+    })
+
+    .post("/dashboard", async (req, res) => {
+    })
+
     .get("/about", async (req, res) => {
         res.render("pages/about.ejs");
     })

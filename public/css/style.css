@@ -131,6 +131,16 @@ img {
 	height: 65px;
 }
 
+#ticket {
+	color: black;
+	width: auto;
+}
+
+table, th, td {
+	border:1px solid black;
+	align-content: center;
+  }
+
 
 @media only screen and (max-width: 96em) {
 
