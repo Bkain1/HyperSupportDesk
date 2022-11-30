@@ -254,6 +254,32 @@ express()
     })
 
     .post("/dashboard", async (req, res) => {
+        try {
+
+            const client = await pool.connect();
+            const title = req.body.title;
+            const description = req.body.description;
+            const author = req.body.author;
+            const priority = req.body.priority;
+            const status = req.body.status;
+            const insertSql = `INSERT INTO tickets (title, description, author, priority, status)
+                VALUES ($1, $2, $3, $4, $5)
+                RETURNING id as newTicket;`;
+
+            const insert = await client.query(insertSql, [title, description, author, priority, status]);
+            
+            const response = {
+                newTicket: insert ? insert.rows[0] : null
+            };
+
+            res.redirect("/dashboard");
+            client.release();
+            
+        } catch (err) {
+
+            console.error(err);
+
+        }
     })
 
     .get("/about", async (req, res) => {
