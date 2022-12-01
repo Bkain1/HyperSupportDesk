@@ -47,14 +47,22 @@
                 </div>
                 <div>
                     <label for="priority">Priority</label>
-                    <input type="text" id="priority" name="priority" required>
+                    <select name="priority" id="priority">
+                        <option value="Low">Low</option>
+                        <option value="Medium">Medium</option>
+                        <option value="High">High</option>
+                    </select>
                 </div>
                 <div>
-                    <label for="status">Status</label>
-                    <input type="text" id="status" name="status" required>
+                    <label for="status">Status (don't change)</label>
+                    <select name="status" id="status">
+                        <option value="Waiting">Waiting</option>
+                        <option value="Completed">Completed</option>
+                    </select>
                 </div>
                 <button type="submit">Create Ticket</button>
             </form>
+
 
 
         <p id="output"></p><br><br><br>
