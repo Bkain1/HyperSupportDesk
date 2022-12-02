@@ -70,7 +70,8 @@ express()
                 
                 res.render("pages/login.ejs", {
                     message: "Email or password is incorrect.",
-                    retry: "Please try again!"
+                    retry: "Please try again!",
+                    email: email
                 });
 
             }

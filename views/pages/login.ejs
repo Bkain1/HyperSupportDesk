@@ -35,7 +35,7 @@
             </div>
             <div>
                 <label for="password">Password</label>
-                <input type="text" id="password" name="password" required>
+                <input type="password" id="password" name="password" required>
             </div>
             <button type="submit">Login</button>
         </form>
@@ -50,6 +50,10 @@ output.innerHTML = '<%= locals.message %><br>';
 
 <% if (locals.retry) { %>
 output.innerHTML += '<%= locals.retry %>';
+<% } %>
+
+<% if (locals.email) { %>
+document.getElementById("email").setAttribute('value', '<%= locals.email %>');
 <% } %>
 
 </script>
