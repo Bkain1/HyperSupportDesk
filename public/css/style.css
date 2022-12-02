@@ -139,7 +139,7 @@ img {
 table, th, td {
 	border:1px solid black;
 	align-content: center;
-  }
+}
 
 
 @media only screen and (max-width: 96em) {
@@ -177,6 +177,25 @@ table, th, td {
 		min-height: 600px;
 		text-align: center;
 		color: #90ee90;
+	}
+
+	.requirements {
+		margin: 0 auto;
+		color: black;
+		width: fit-content;
+		text-align: left;
+	}
+
+	.requirements h4 {
+		text-align: center;
+	}
+
+	.requirements li {
+		padding: 0;
+	}
+
+	.requirements p {
+		font-size: .95em;
 	}
 
 }
