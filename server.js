@@ -69,7 +69,8 @@ express()
             } else {
                 
                 res.render("pages/login.ejs", {
-                    message: "Invalid login. Please try again."
+                    message: "Email or password is incorrect.",
+                    retry: "Please try again!"
                 });
 
             }

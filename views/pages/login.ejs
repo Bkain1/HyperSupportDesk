@@ -45,8 +45,13 @@
 </body>
 <script>
 <% if (locals.message) { %>
-output.innerHTML = '<%= locals.message %>';
+output.innerHTML = '<%= locals.message %><br>';
 <% } %>
+
+<% if (locals.retry) { %>
+output.innerHTML += '<%= locals.retry %>';
+<% } %>
+
 </script>
 
 </html>
