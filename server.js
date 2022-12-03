@@ -26,6 +26,9 @@ express()
         // be something kept safe, but because we are using this only for
         // a class, this is fine.
         secret: "DontDoThisInProductionCode",
+        cookie: {
+            sameSite: "strict"
+        },
         resave: false,
         saveUninitialized: true
     }))
