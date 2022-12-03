@@ -42,10 +42,6 @@
                     <input type="text" id="description" name="description" required>
                 </div>
                 <div>
-                    <label for="author">Author</label>
-                    <input type="text" id="author" name="author" required>
-                </div>
-                <div>
                     <label for="priority">Priority</label>
                     <select name="priority" id="priority">
                         <option value="Low">Low</option>
@@ -99,7 +95,6 @@
     const onRegister = async function() {
     const titleText = document.getElementById('title').value;
     const descriptionText = document.getElementById('description').value;
-    const authorText = document.getElementById('author').value;
     const priorityText = document.getElementById('priority').value;
     const statusText = document.getElementById('status').value;
     const response = await fetch("/log", {

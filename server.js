@@ -208,8 +208,8 @@ express()
         res.render("pages/login.ejs", {
             message: "Please login first."
         });
-
        }
+
         // try {
         //     const client = await pool.connect();
         //     const ticketsSql = "SELECT * FROM tickets ORDER BY id ASC;";
@@ -238,13 +238,24 @@ express()
     .get("/dashboard", async (req, res) => {
        
         try {
+            
+            // Test if the user is logged in
+            if (!req.session.user) {
+
+                // Redirect the user
+                return res.render("pages/login.ejs", {
+                    message: "Please login first."
+                });
+            }
+
             const client = await pool.connect();
-            const ticketsSql = "SELECT * FROM tickets ORDER BY id ASC;";
-            const tickets = await client.query(ticketsSql);
+            const ticketsSql = "SELECT * FROM tickets WHERE author = $1 ORDER BY id ASC;";
+            const tickets = await client.query(ticketsSql, [req.session.user.email]);
             const response = {
                 "tickets":tickets ? tickets.rows : null
             };
             res.render("pages/dashboard.ejs", response);
+            client.release();
 
         } catch (err) {
             console.error(err);
@@ -266,7 +277,7 @@ express()
             const client = await pool.connect();
             const title = req.body.title;
             const description = req.body.description;
-            const author = req.body.author;
+            const author = req.session.user.email
             const priority = req.body.priority;
             const status = req.body.status;
             const insertSql = `INSERT INTO tickets (title, description, author, priority, status)
