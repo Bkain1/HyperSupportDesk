@@ -260,17 +260,9 @@ express()
 
     .get("/dashboard", async (req, res) => {
        
-        try {
-            
-            const usertype = req.session.user.usertype;
-            // Test if the user is logged in
-            if (!req.session.user) {
 
-                // Redirect the user
-                return res.render("pages/login.ejs", {
-                    message: "Please login first."
-                });
-            }
+            // Test if the user is not logged in
+            if (req.session.user) {
 
             // Test if user is a supporter/admin
             // If so, let them see everything otherwise just show them their tickets
@@ -278,6 +270,7 @@ express()
             var ticketsSql = "";
             var tickets;
 
+            const usertype = req.session.user.usertype;
             const client = await pool.connect();
             // Check user's id
             if (usertype >= 1) {
@@ -297,16 +290,16 @@ express()
             };
             res.render("pages/dashboard.ejs", response);
             client.release();
+            
+            } else {
 
-        } catch (err) {
-            console.error(err);
-            res.set({
-                "Content-Type": "application/json"
-            });
-            res.json({
-                error: err
+            // Redirect the user
+            return res.render("pages/login.ejs", {
+                message: "Please login first."
             });
         }
+
+
     })
     
     .post("/dashboard", async (req, res) => {
