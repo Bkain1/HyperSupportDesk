@@ -11,16 +11,6 @@
 
 
 <body>
-    <% function unescapeCharacters(string) {
-        return string.replace(/&quot;/g, '"')
-        .replace(/&#x27;/g, "'")
-        .replace(/&lt;/g, '<')
-        .replace(/&gt;/g, '>')
-        .replace(/&#x2F;/g, '/')
-        .replace(/&#x5C;/g, '\\')
-        .replace(/&#96;/g, '`')
-        .replace(/&amp;/g, '&');
-    } %> 
     <div id="wrapper">
 
         <header>
@@ -83,7 +73,19 @@
                 <td>PRIORITY</td>
                 <td>STATUS</td>
             </tr>
-        <% tickets.forEach(function(t) { %>
+        <% 
+        function unescapeCharacters(string) {
+            return string.replace(/&quot;/g, '"')
+            .replace(/&#x27;/g, "'")
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&#x2F;/g, '/')
+            .replace(/&#x5C;/g, '\\')
+            .replace(/&#96;/g, '`')
+            .replace(/&amp;/g, '&');
+        }
+    
+        tickets.forEach(function(t) { %>
             <tr>
                 <td><%= t.id %></td>
                 <td><%= t.title %></td>

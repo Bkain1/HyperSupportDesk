@@ -208,8 +208,7 @@ express()
 
             // If testing passes, make sure the database is getting safe input
 
-            // Don't trim name, we want spaces
-            name = escapeCharacters(name);
+            name = escapeCharacters(name).trim();
             email = escapeCharacters(email).trim();
             // Password shouldn't need to be escaped, as SHA-256
             // uses database safe characters
