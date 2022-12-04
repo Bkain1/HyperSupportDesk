@@ -71,7 +71,7 @@ express()
             //
             // escape the characters so they are the same as
             // those in the database.
-            const email = escapeCharacters(req.body.email).trim();
+            const email = req.body.email;
             const password = req.body.password;
 
             // hash the password being taken in
@@ -79,7 +79,7 @@ express()
             hash.update(password);
 
             const selectEmailSql = "SELECT name, password, usertype FROM users WHERE email = $1;";
-            const selectEmail = await client.query(selectEmailSql, [email]);
+            const selectEmail = await client.query(selectEmailSql, [escapeCharacters(email).trim()]);
             
             // Check if password mathces with database
             // Note: Database stored the user's HASHED password.
@@ -122,7 +122,6 @@ express()
         res.render("pages/register.ejs");
     })
 
-    // Registration validators and sanitizers
     .post("/register", async (req, res) => {
 
         // Get the variables from the Register form
@@ -254,26 +253,6 @@ express()
             message: "Please login first."
         });
        }
-
-        // try {
-        //     const client = await pool.connect();
-        //     const ticketsSql = "SELECT * FROM tickets ORDER BY id ASC;";
-        //     const tickets = await client.query(ticketsSql);
-        //     const response = {
-        //         "tickets": tickets ? tickets.rows : null
-        //     };
-        //     res.render("pages/welcome.ejs", response);
-
-        // } catch (err) {
-        //     console.error(err);
-        //     res.set({
-        //         "Content-Type": "application/json"
-        //     });
-        //     res.json({
-        //         error: err
-        //     });
-        // }
-    
     })
 
     .post("/welcome", async (req, res) => {
@@ -284,7 +263,7 @@ express()
        
         try {
             
-            const usertype = req.session.user.usertype
+            const usertype = req.session.user.usertype;
             // Test if the user is logged in
             if (!req.session.user) {
 
@@ -294,33 +273,31 @@ express()
                 });
             }
 
-
             // Test if user is a supporter/admin
             // If so, let them see everything otherwise just show them their tickets
 
+            var ticketsSql = "";
+            var tickets;
+
+            const client = await pool.connect();
             // Check user's id
             if (usertype >= 1) {
 
-            const client = await pool.connect();
-            const ticketsSql = "SELECT * FROM tickets ORDER BY id ASC;";
-            const tickets = await client.query(ticketsSql);
-            const response = {
-                "tickets":tickets ? tickets.rows : null
-            };
-            res.render("pages/dashboard.ejs", response);
-            client.release();
+                ticketsSql = "SELECT * FROM tickets ORDER BY id ASC;";
+                tickets = await client.query(ticketsSql);
 
             } else {
             
-            const client = await pool.connect();
-            const ticketsSql = "SELECT * FROM tickets WHERE author = $1 ORDER BY id ASC;";
-            const tickets = await client.query(ticketsSql, [escapeCharacters(req.session.user.email).trim()]);
+                ticketsSql = "SELECT * FROM tickets WHERE author = $1 ORDER BY id ASC;";
+                tickets = await client.query(ticketsSql, [escapeCharacters(req.session.user.email).trim()]);
+            
+            }
+
             const response = {
                 "tickets":tickets ? tickets.rows : null
             };
             res.render("pages/dashboard.ejs", response);
             client.release();
-        }
 
         } catch (err) {
             console.error(err);
