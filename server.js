@@ -239,6 +239,7 @@ express()
        
         try {
             
+            const usertype = req.session.user.usertype
             // Test if the user is logged in
             if (!req.session.user) {
 
@@ -248,6 +249,24 @@ express()
                 });
             }
 
+
+            // Test if user is a supporter/admin
+            // If so, let them see everything otherwise just show them their tickets
+
+            // Check user's id
+            if (usertype >= 1) {
+
+            const client = await pool.connect();
+            const ticketsSql = "SELECT * FROM tickets ORDER BY id ASC;";
+            const tickets = await client.query(ticketsSql);
+            const response = {
+                "tickets":tickets ? tickets.rows : null
+            };
+            res.render("pages/dashboard.ejs", response);
+            client.release();
+
+            } else {
+            
             const client = await pool.connect();
             const ticketsSql = "SELECT * FROM tickets WHERE author = $1 ORDER BY id ASC;";
             const tickets = await client.query(ticketsSql, [req.session.user.email]);
@@ -256,6 +275,7 @@ express()
             };
             res.render("pages/dashboard.ejs", response);
             client.release();
+        }
 
         } catch (err) {
             console.error(err);
