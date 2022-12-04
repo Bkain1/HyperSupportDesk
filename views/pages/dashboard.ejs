@@ -11,6 +11,16 @@
 
 
 <body>
+    <% function unescapeCharacters(string) {
+        return string.replace(/&quot;/g, '"')
+        .replace(/&#x27;/g, "'")
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&#x2F;/g, '/')
+        .replace(/&#x5C;/g, '\\')
+        .replace(/&#96;/g, '`')
+        .replace(/&amp;/g, '&');
+    } %> 
     <div id="wrapper">
 
         <header>
@@ -78,7 +88,7 @@
                 <td><%= t.id %></td>
                 <td><%= t.title %></td>
                 <td><%= t.description %></td>
-                <td><%= t.author %></td>
+                <td><%= unescapeCharacters(t.author) %></td>
                 <td><%= t.priority %></td>
                 <td><%= t.status %></td>
             </tr>

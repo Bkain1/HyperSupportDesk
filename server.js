@@ -13,7 +13,27 @@ const pool = new Pool({
         rejectUnauthorized: false
     }
 });
-const { check, validationResult } = require("express-validator");
+function escapeCharacters(string) {
+    return string.replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/\//g, '&#x2F;')
+    .replace(/\\/g, '&#x5C;')
+    .replace(/`/g, '&#96;');
+}
+
+function unescapeCharacters(string) {
+    return string.replace(/&quot;/g, '"')
+    .replace(/&#x27;/g, "'")
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&#x2F;/g, '/')
+    .replace(/&#x5C;/g, '\\')
+    .replace(/&#96;/g, '`')
+    .replace(/&amp;/g, '&');
+}
 
 app.use(express.static('public'));
 
@@ -46,8 +66,12 @@ express()
         try {
             // Connect our client to the db
             const client = await pool.connect();
+
             // Get the credentials from the Login form
-            const email = req.body.email;
+            //
+            // escape the characters so they are the same as
+            // those in the database.
+            const email = escapeCharacters(req.body.email).trim();
             const password = req.body.password;
 
             // hash the password being taken in
@@ -61,9 +85,10 @@ express()
             // Note: Database stored the user's HASHED password.
             if (selectEmail.rows[0] && selectEmail.rows[0].password == hash.digest('hex')) {
 
+                // Un-escape characters when retreiving...
                 req.session.user = {
-                    name: selectEmail.rows[0].name,
-                    email: email,
+                    name: unescapeCharacters(selectEmail.rows[0].name),
+                    email: unescapeCharacters(email),
                     usertype: selectEmail.rows[0].usertype
                 }
 
@@ -98,99 +123,119 @@ express()
     })
 
     // Registration validators and sanitizers
-    .post("/register", [
-        check('name', 'Please enter a valid name with only letters.')
-            .matches('[a-zA-Z]+')
-            .trim()
-            .escape(),
-        check('email', 'Please enter a valid email address.')
-            .isEmail()
-            .normalizeEmail()
-            .trim()
-            .escape(),
-        check('password')
-            .isLength({ min: 8 })
-            .withMessage('Please enter a password at least 8 digits long.')
-            .matches('[A-Z]')
-            .withMessage('Please enter a password with at least 1 capital letter.')
-            .matches('[0-9]')
-            .withMessage('Please enter a password with at least 1 number.')
-            .matches('[^A-Za-z0-9]')
-            .withMessage('Please enter a password with at least 1 special character.')
-            .trim()
-            .escape(),
-        check('confirm')
-            .trim()
-            .escape()
-    ], (req, res) => {
-
-        const errorFormatter = ({ msg }) => {
-            return `${msg}`;
-        };
-
-        const errors = validationResult(req).formatWith(errorFormatter);
-        if (!errors.isEmpty()) {
-
-            return res.render('pages/register.ejs', {
-                errors: errors.mapped()
-            })
-
-        }
+    .post("/register", async (req, res) => {
 
         // Get the variables from the Register form
-        const name = req.body.name;
-        const email = req.body.email;
-        const password = req.body.password;
+        var name = req.body.name;
+        var email = req.body.email;
+        var password = req.body.password;
         const confirm = req.body.confirm;
 
-        (async () => {
+        // Test if name is only letters
+        if (!/[a-zA-Z]+/.test(name)) {
+            return res.render('pages/register.ejs', {
+                message: 'Please enter a valid name with only letters.'
+            })
+        }
 
-            // Connect our client to the db
-            const client = await pool.connect();
+        // Test if email address is valid
+        const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        if (!emailRegex.test(email)) {
+            return res.render('pages/register.ejs', {
+                message: 'Please enter a valid email address.',
+                name: name
+            })
+        }
+
+        // check if password is valid length
+        if (password.length < 8) {
+            return res.render('pages/register.ejs', {
+                message: 'Please enter a password at least 8 characters long.',
+                name: name,
+                email: email
+            })
+        }
+
+        // Check if password contains a capital letter
+        if (!/[A-Z]/.test(password)) {
+            return res.render('pages/register.ejs', {
+                message: 'Please enter a password with at least 1 capital letter.',
+                name: name,
+                email: email
+            })
+        }
+
+        if (!/[0-9]/.test(password)) {
+            return res.render('pages/register.ejs', {
+                message: 'Please enter a password with at least 1 number.',
+                name: name,
+                email: email
+            })
+        }
+
+        if (!/[^A-Za-z0-9]/.test(password)) {
+            return res.render('pages/register.ejs', {
+                message: 'Please enter a password with at least 1 special character.',
+                name: name,
+                email: email
+            })
+        }
+
+        // check if passwords match
+        if (password !== confirm) {
+            return res.render('pages/register.ejs', {
+                message: 'Passwords do not match.',
+                name: name,
+                email: email
+            })
+        }
+
+        // Connect our client to the db
+        const client = await pool.connect();
+        
+        const selectEmailSql = "SELECT * FROM users WHERE email = $1;";
+        client.query(selectEmailSql, [email], async (error, result) => {
+            if (error) {
+                console.error(error);
+            }
             
-            const selectEmailSql = "SELECT * FROM users WHERE email = $1;";
-            client.query(selectEmailSql, [email], async (error, result) => {
+            // Test if the email is already in the database
+            if (result.rows.length > 0) {
+                return res.render('pages/register.ejs', {
+                    message: 'This email is already in use.',
+                    name: name
+                })
+            }
+
+            // If testing passes, make sure the database is getting safe input
+
+            // Don't trim name, we want spaces
+            name = escapeCharacters(name);
+            email = escapeCharacters(email).trim();
+            // Password shouldn't need to be escaped, as SHA-256
+            // uses database safe characters
+
+            // Create hash
+            const hash = crypto.createHash('sha256');
+            hash.update(password);
+
+            const insertSql = `INSERT INTO users (name, email, password)
+            VALUES ($1, $2, $3)
+            RETURNING id as newId;`;
+
+            // Insert into database
+            client.query(insertSql, [name, email, hash.digest('hex')], (err, result) => {
                 if (error) {
-                    console.error(error);
-                }
-
-                // Test if the email is already in the database
-                if (result.rows.length > 0) {
-                    return res.render('pages/register.ejs', {
-                        message: 'This email is already in use.',
-                        name: name
-                    })
-
-                } else if (password !== confirm) {
-                    return res.render('pages/register.ejs', {
-                        message: 'Passwords do not match.',
-                        name: name,
-                        email: email
+                    console.log(error)
+                } else {
+                    res.render('pages/register.ejs', {
+                        message: 'User registered!'
                     })
                 }
-
-                // Create hash
-                const hash = crypto.createHash('sha256');
-                hash.update(password);
-
-                const insertSql = `INSERT INTO users (name, email, password)
-                VALUES ($1, $2, $3)
-                RETURNING id as newId;`;
-
-                // Insert into database
-                client.query(insertSql, [name, email, hash.digest('hex')], (err, result) => {
-                    if (error) {
-                        console.log(error)
-                    } else {
-                        res.render('pages/register.ejs', {
-                            message: 'User registered!'
-                        })
-                    }
-                });
-                
-                client.release();
             });
-        })();
+                
+            client.release();
+        });
     })
 
     .get("/welcome", async (req, res) => {
@@ -250,7 +295,7 @@ express()
 
             const client = await pool.connect();
             const ticketsSql = "SELECT * FROM tickets WHERE author = $1 ORDER BY id ASC;";
-            const tickets = await client.query(ticketsSql, [req.session.user.email]);
+            const tickets = await client.query(ticketsSql, [escapeCharacters(req.session.user.email).trim()]);
             const response = {
                 "tickets":tickets ? tickets.rows : null
             };
@@ -266,10 +311,7 @@ express()
                 error: err
             });
         }
-    
     })
-
-
     
     .post("/dashboard", async (req, res) => {
         try {
@@ -277,7 +319,7 @@ express()
             const client = await pool.connect();
             const title = req.body.title;
             const description = req.body.description;
-            const author = req.session.user.email
+            const author = escapeCharacters(req.session.user.email).trim();
             const priority = req.body.priority;
             const status = req.body.status;
             const insertSql = `INSERT INTO tickets (title, description, author, priority, status)
