@@ -12,3 +12,12 @@ When creating HyperSupportDesk, we created a Node.js application, with the follo
 We used postgreSQL to create a database, and used Render to host our website.
 To create the database needed for HyperSupportDesk, reference <code>schema.sql</code>.
 This schema creates tables for storing user data.
+
+## User Instructions
+<ol>
+  <li>Open the site.</li>
+  <li>Navigate to the login page.</li>
+  <li>Create an account by filling out the name, email, and password fields.</li>
+  <li>Navigate to the dashboard.</li>
+  <li>Create a new ticket or view a previous tickets.</li>
+</ol>
