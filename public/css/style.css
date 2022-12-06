@@ -4,14 +4,19 @@ body {
 	font-family: verdana, arial, sans-serif;
 }
 
+#wrapper {
+	width: 95%;
+	background-color: gray;
+	box-shadow: 3px 3px 3px #0d5806;
+	margin: 0 auto;
+}
+
 /* Main hero content */
 #hero {
 	display: block;
 	position: relative;
-	min-width: 400px;
-	min-height: 600px;
 	padding: 20px;
-	margin: 0 0px;
+	margin: 0;
 	text-align: center;
 	color: #90ee90;
 }
@@ -31,71 +36,41 @@ p {
 	font-size: 18px;
 }
 
+a {
+	color: #90ee90;
+}
+
 a:hover {
 	color: darkgreen;
 }
 
-.container {
-	position: absolute;
-	width: 400px;
-	height: 400px;
-	margin: 50px auto;
-}
-
-footer {
-	font-size: 0.7em;
-	margin-top: 5em;
-}
-
-nav ul {
-	font-size: 1.2em;
-	list-style: none;
-	padding-left: 0px;
-	align-content: center;
-	padding-top: 3px;
+img {
+	padding: 1em 0 0 1em;
+	width: 24rem;
 }
 
 nav {
-	font-weight: bold;
-	text-decoration: none;
-	text-align: right;
-	padding: 0;
-	float: none;
-	width: auto;
+	float: right;
+	padding-right: 1em;
+}
+
+nav ul {
+	list-style: none;
+	align-content: center;
+	padding-top: calc(0.5em + 2px);
 }
 
 nav li {
 	display: inline;
-	padding-top: 10px;
-	padding-bottom: 10px;
-	padding-left: 1.25em;
-	padding-right: 1.25em;
-	margin-left: 20px;
-	border-width: 3px;
-	border-style: solid;
-	border-color: darkgreen;
-}
-
-li {
-	padding-top: 10px;
-	padding-bottom: 10px;
-	padding-left: 0em;
-	padding-right: 0em;
-	margin-left: 0px;
-	text-align: left;
-}
-
-dl {
-	color: #000;
-	text-align: left;
-	font-size: 20px;
+	padding: 0.5em 1em;
+	border: 2px solid darkgreen;
 }
 
 nav a {
 	font-weight: bold;
 	text-decoration: none;
 	color: darkgreen;
-	font-size: 30px;
+	font-size: 1em;
 }
 
 nav a:link {
@@ -107,95 +82,134 @@ nav a:focus {
 	color: #11ef21;
 }
 
-#wrapper {
-	width: 95%;
-	background-color: gray;
-	min-width: 1300px;
-	max-width: 2048px;
-	box-shadow: 3px 3px 3px #0d5806;
-	margin: auto;
-	margin-left: auto;
-	margin-right: auto;
-	align-content: center;
+.container {
+	position: absolute;
+	margin: 50px auto;
+}
+
+dl {
+	color: #000;
+	text-align: left;
+	font-size: 1.25;
 }
 
 .center {
 	display: block;
-	margin-left: auto;
-	margin-right: auto;
-	width: 50%;
+	margin: 0 auto;
+	width: 100%;
 }
 
-img {
-	width: 640;
-	height: 65px;
+footer {
+	font-size: 0.7em;
+	margin-top: 5em;
 }
 
 #ticket {
 	color: black;
-	width: auto;
+	width: 100%;
 }
 
-table, th, td {
-	border:1px solid black;
-	align-content: center;
+#ticket {
+	background-color: white;
+	color: black;
+	margin: 0 auto;
+	width: 100%;
 }
 
+#ticket tr:nth-child(even) {
+	background-color: #90ee90;
+}
 
-@media only screen and (max-width: 96em) {
+#ticketEntry {
+	border: none;
+	margin: 0 auto;
+	width: 50%;
+	color: #000;
+	border-collapse: collapse;
+	border-collapse:separate;
+  	border-spacing: 10px 15px;
+}
 
-	nav li {
-		display: inline;
-		padding-top: 10px;
-		padding-bottom: 10px;
-		padding-left: 0em;
-		padding-right: 0em;
-		margin-left: 0px;
-		border-width: 3px;
-		border-style: solid;
-		border-color: darkgreen;
+#ticketEntry > td {
+	border-style : hidden;
+	border-collapse:collapse;
+
+}
+
+.requirements {
+	margin: 0 auto;
+	color: black;
+	width: fit-content;
+	text-align: left;
+}
+
+.requirements h4 {
+	text-align: center;
+}
+
+.requirements li {
+	padding: 0;
+}
+
+.requirements p {
+	font-size: .95em;
+}	
+
+/* Tablet */
+@media only screen and (max-width: 48rem) {
+
+	#wrapper {
+		width: 100%;
+		padding: 0;
+		margin: 0 auto;
+		box-shadow: none;
+	}
+
+	header {
+		width: 100%;
 	}
 
 	img {
-		align-self: center;
 		display: block;
-		margin-left: auto;
-		margin-right: auto;
+		padding: 2em 0;
+		margin: 0 auto;
+		width: 30em;
 	}
-
-	nav a {
-		font-weight: bold;
-		text-decoration: none;
-		color: darkgreen;
-		font-size: 30px;
+	
+	nav {
+		padding: 0;
+		margin: 0 auto;
+		width: 100%;
+	}
+	
+	nav ul {
+		margin: 0 auto;
+		padding: 0 0 2em 0;
+		width: fit-content;
+	}
+	
+	nav li {
+		padding: 0.5em 1em;
 	}
 
 	#hero {
-		display: block;
-		position: relative;
-		min-width: 400px;
-		min-height: 600px;
-		text-align: center;
-		color: #90ee90;
-	}
-
-	.requirements {
-		margin: 0 auto;
-		color: black;
-		width: fit-content;
-		text-align: left;
-	}
-
-	.requirements h4 {
-		text-align: center;
-	}
-
-	.requirements li {
 		padding: 0;
+		margin: 0;
+		width: 100%;
+	}
+}
+
+/* Mobile */
+@media only screen and (max-width: 30rem) { 
+
+	.hideMobile {
+		display: none;
 	}
 
-	.requirements p {
-		font-size: .95em;
+	img {
+		display: block;
+		padding-bottom: 2em;
+		margin: 0 auto;
+		width: 20em;
 	}
-
 }
