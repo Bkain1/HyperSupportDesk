@@ -81,11 +81,11 @@ express()
             const selectEmailSql = "SELECT name, password, usertype FROM users WHERE email = $1;";
             const selectEmail = await client.query(selectEmailSql, [escapeCharacters(email).trim()]);
             
-            // Check if password mathces with database
+            // Check if password matches with database
             // Note: Database stored the user's HASHED password.
             if (selectEmail.rows[0] && selectEmail.rows[0].password == hash.digest('hex')) {
 
-                // Un-escape characters when retreiving...
+                // Un-escape characters when retrieving...
                 req.session.user = {
                     name: unescapeCharacters(selectEmail.rows[0].name),
                     email: unescapeCharacters(email),
