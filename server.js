@@ -254,8 +254,19 @@ express()
     })
 
     .get("/welcome", async (req, res) => {
-        // Test if the user is logged in
-       if (req.session.user) {
+
+        // Test if the user is logged in and what their usertype is
+
+        const usertype = req.session.user.usertype;
+        if (usertype >= 1) {
+
+            // Render the admin console
+            
+            res.render("pages/admin.ejs", {
+                user: req.session.user
+            });
+        
+        } else if (req.session.user) {
 
         // Render the page with the user information
         res.render("pages/welcome.ejs", {
@@ -347,6 +358,32 @@ express()
 
         }
     })
+
+    .get("/admin", async (req, res) => {
+
+        const usertype = req.session.user.usertype;
+        if (usertype >= 1) {
+
+            // Render the admin console          
+            res.render("pages/admin.ejs", {
+                user: req.session.user
+            });
+        
+        } else {
+
+        // Render the page with the user information
+        res.render("pages/welcome.ejs", {
+            user: req.session.user,
+            message: "You do not have access to the admin page."
+        });
+
+
+       }
+
+    })
+
+    .post("/admin", async (req, res) => {
+    })   
 
     .get("/about", async (req, res) => {
         res.render("pages/about.ejs");

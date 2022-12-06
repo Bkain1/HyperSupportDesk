@@ -2,13 +2,12 @@
 <html lang="en">
 
 <head>
-    <title>HSD - Welcome</title>
+    <title>HSD - Login</title>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/style.css">
 </head>
-
 
 <body>
     <div id="wrapper">
@@ -27,21 +26,32 @@
         </header>
 
         <main id="hero">
-            <h2>HyperSupportDesk - Welcome, <%= user.name %>!</h2>
-            <p>You successfully logged in!</p>
+            <h2>HyperSupportDesk - Admin Console</h2>
+
+            <p>Here you will be able to edit accounts.</p>
+
+            <p>Usertype 0 = standard user</p>
+            <p>Usertype 1 = Supportive/Admin user</p>
+
+        <form action="/login" method="POST">
+            <div>
+                <label for="id">User Id</label>
+                <input type="text" id="id" name="id" required>
+            </div>
+            <div>
+                <label for="usertype">Usertype</label>
+                <input type="text" id="usertype" name="usertype" required>
+            </div>
+            <button type="submit">Update</button>
+
+        </form>
         <p id="output"></p>
-        </main>
-
-        <script>
-        const output = document.getElementById("output");
-
-    const onRegister = async function() {
-    const titleText = document.getElementById('title').value;
-    const descriptionText = document.getElementById('description').value;
-    const authorText = document.getElementById('author').value;
-    const priorityText = document.getElementById('priority').value;
-    const statusText = document.getElementById('status').value;
-    const response = await fetch("/log", {
+        
+    </main>
+    </div>
+</body>
+<script>
+        const response = await fetch("/log", {
         method: "POST",
         headers: {
             "Accept": "application/json",
@@ -50,20 +60,10 @@
      
     });
     const result = await response.json();
-    if (result.error) {
-        output.innerHTML = `<strong>Error: ${result.error.routine}</strong>`;
-    } else {
-        output.innerHTML = "Current Tickets.";
-    }
-    };
-
 <% if (locals.message) { %>
 output.innerHTML = '<%= locals.message %><br>';
 <% } %>
-        </script>
 
-    </div>
-
-</body>
+</script>
 
 </html>
