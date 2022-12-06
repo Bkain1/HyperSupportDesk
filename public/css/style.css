@@ -136,11 +136,32 @@ img {
 	width: auto;
 }
 
-table, th, td {
-	border:1px solid black;
-	align-content: center;
+#ticket {
+	background-color: white;
+	color: black;
+	margin: 0 auto;
+	width: 100%;
 }
 
+#ticket tr:nth-child(even) {
+	background-color: #90ee90;
+}
+
+#ticketEntry {
+	border: none;
+	margin: 0 auto;
+	width: 50%;
+	color: #000;
+	border-collapse: collapse;
+	border-collapse:separate;
+  border-spacing: 10px 15px;
+}
+
+#ticketEntry > td {
+	border-style : hidden;
+	border-collapse:collapse;
+
+}
 
 @media only screen and (max-width: 96em) {
 

@@ -33,29 +33,49 @@
 
             <!-- Add Ticket UI Here -->
             <form action="/dashboard" method="POST">
-                <div>
-                    <label for="title">Title</label>
-                    <input type="text" id="title" name="title" required>
-                </div>
-                <div>
-                    <label for="description">Description</label>
-                    <input type="text" id="description" name="description" required>
-                </div>
-                <div>
-                    <label for="priority">Priority</label>
-                    <select name="priority" id="priority">
-                        <option value="Low">Low</option>
-                        <option value="Medium">Medium</option>
-                        <option value="High">High</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="status">Status (don't change)</label>
-                    <select name="status" id="status">
-                        <option value="Waiting">Waiting</option>
-                        <option value="Completed">Completed</option>
-                    </select>
-                </div>
+                <style type="text/css">
+                    table, th, td {
+                     border: 1px solid;
+                    }
+                    
+                    tr.hide_all > td, td.hide_all{
+                       border: 0;
+                      
+                    }
+              </style>
+                <table id="ticketEntry">
+                    <tr class= hide_all>
+                        <td style="text-align:right"><label for="title">Title</label></td>
+                        <td style="text-align:left"><input type="text" id="title" name="title" required></td>
+                    </tr>
+                    <tr class= hide_all>
+                        <td style="text-align:right"><label for="description">Description</label></td>
+                        <td style="text-align:left"><input type="text" id="description" name="description" required></td>
+                    </tr>
+                    <tr class= hide_all>
+                        <td style="text-align:right"><label for="author">Author</label></td>
+                        <td style="text-align:left"><input type="text" id="author" name="author" required></td>
+                    </tr>
+                    <tr class= hide_all>
+                        <td style="text-align:right"><label for="priority">Priority</label></td>
+                        <td style="text-align:left">
+                            <select name="priority" id="priority">
+                                <option value="Low">Low</option>
+                                <option value="Medium">Medium</option>
+                                <option value="High">High</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr class= hide_all>
+                        <td style="text-align:right"><label for="status">Status (don't change)</label></td>
+                        <td style="text-align:left">
+                            <select name="status" id="status">
+                                <option value="Waiting">Waiting</option>
+                                <option value="Completed">Completed</option>
+                            </select>
+                        </td>
+                    </tr>
+                </table>
                 <button type="submit">Create Ticket</button>
             </form>
 
@@ -64,7 +84,7 @@
         <p id="output"></p><br><br><br>
         <p>View Tickets</p>
         <div class="center">
-        <table style="width:auto" id="ticket">
+        <table id="ticket">
             <tr>
                 <td>ID</td>
                 <td>TITLE</td>
@@ -97,7 +117,6 @@
         <% }); %>
         </table>
     </div>
-
 
         </main>
 
