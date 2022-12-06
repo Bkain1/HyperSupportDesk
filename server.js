@@ -58,6 +58,23 @@ express()
         res.render("pages/index.ejs");
     })
 
+    .post("/", async(req, res) => {
+
+        if (req.session.user) { //Check if logged in
+           req.session.user = false;
+           res.render("pages/login.ejs", {
+            message: "You are now logged out."
+            
+        });
+
+           } else {
+            // Redirect the user
+            res.render("pages/login.ejs", {
+                message: "You are logged out."
+            });
+           }
+    })
+    
     .get("/login", (req, res) => {
         res.render("pages/login.ejs")
     })

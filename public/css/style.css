@@ -11,6 +11,11 @@ body {
 	margin: 0 auto;
 }
 
+.logout {
+	display: block;
+	text-align: right;
+}
+
 /* Main hero content */
 #hero {
 	display: block;
@@ -154,6 +159,8 @@ footer {
 .requirements p {
 	font-size: .95em;
 }	
+
+
 
 /* Tablet */
 @media only screen and (max-width: 48rem) {
