@@ -14,20 +14,20 @@
     <div id="wrapper">
 
         <header>
-            <img src="images/HSDLogo.png" alt="HyperSupportDesk Logo">
-            <nav>
-                <ul>
-                    <li><a href="/">Home</a></li>
-                    <li><a href="/about">About Us</a></li>
-                    <li><a href="/dashboard">Dashboard</a></li>
-                    <li><a href="/login">Login</a></li>
-                    <li><a href="/quickFixes">QuickFixes</a></li>
-                </ul>
-            </nav>
+            <img src="images/HSDLogo.png" alt="HyperSupportDesk Logo" align="left">
         </header>
 
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/about">About Us</a></li>
+                <li><a href="/login">Login</a></li>
+                <li><a href="/quickFixes">QuickFixes</a></li>
+            </ul>
+        </nav>
+
         <main id="hero">
-            <h2>HyperSupportDesk - Dashboard</h2>
+            <h2>HyperSupportDesk - Dashboard</h2><br>
 
             <p>You can now create a ticket.</p>
 
@@ -43,53 +43,45 @@
                       
                     }
               </style>
-                <table id="ticketEntry">
-                    <tr class= hide_all>
-                        <td style="text-align:right"><label for="title">Title</label></td>
-                        <td style="text-align:left"><input type="text" id="title" name="title" required></td>
-                    </tr>
-                    <tr class= hide_all>
-                        <td style="text-align:right"><label for="description">Description</label></td>
-                        <td style="text-align:left"><input type="text" id="description" name="description" required></td>
-                    </tr>
-                    <tr class= hide_all>
-                        <td style="text-align:right"><label for="author">Author</label></td>
-                        <td style="text-align:left"><input type="text" id="author" name="author" required></td>
-                    </tr>
-                    <tr class= hide_all>
-                        <td style="text-align:right"><label for="priority">Priority</label></td>
-                        <td style="text-align:left">
-                            <select name="priority" id="priority">
-                                <option value="Low">Low</option>
-                                <option value="Medium">Medium</option>
-                                <option value="High">High</option>
-                            </select>
-                        </td>
-                    </tr>
-                    <tr class= hide_all>
-                        <td style="text-align:right"><label for="status">Status (don't change)</label></td>
-                        <td style="text-align:left">
-                            <select name="status" id="status">
-                                <option value="Waiting">Waiting</option>
-                                <option value="Completed">Completed</option>
-                            </select>
-                        </td>
-                    </tr>
-                </table>
+                <div>
+                    <label for="title">Title</label>
+                    <input type="text" id="title" name="title" required>
+                </div>
+                <div>
+                    <label for="description">Description</label>
+                    <input type="text" id="description" name="description" required>
+                </div>
+                <div>
+                    <label for="priority">Priority</label>
+                    <select name="priority" id="priority">
+                        <option value="Low">Low</option>
+                        <option value="Medium">Medium</option>
+                        <option value="High">High</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="status">Status (don't change)</label>
+                    <select name="status" id="status">
+                        <option value="Waiting">Waiting</option>
+                        <option value="Completed">Completed</option>
+                    </select>
+                </div>
                 <button type="submit">Create Ticket</button>
             </form>
 
-        <p id="output"></p>
+
+
+        <p id="output"></p><br><br><br>
         <p>View Tickets</p>
         <div class="center">
-        <table id="ticket">
+        <table style="width:auto" id="ticket">
             <tr>
                 <td>ID</td>
                 <td>TITLE</td>
                 <td>DESCRIPTION</td>
                 <td>AUTHOR</td>
-                <td class="hideMobile">PRIORITY</td>
-                <td class="hideMobile">STATUS</td>
+                <td>PRIORITY</td>
+                <td>STATUS</td>
             </tr>
         <% 
         function unescapeCharacters(string) {
@@ -109,39 +101,71 @@
                 <td><%= t.title %></td>
                 <td><%= t.description %></td>
                 <td><%= unescapeCharacters(t.author) %></td>
-                <td class="hideMobile"><%= t.priority %></td>
-                <td class="hideMobile"><%= t.status %></td>
+                <td><%= t.priority %></td>
+                <td><%= t.status %></td>
+                <td><button id="<%= t.id %>" onclick="javascript:editTicket(<%= t.id %>);">Edit ticket</button></td>
             </tr>
+
         <% }); %>
         </table>
     </div>
 
+
         </main>
 
         <script>
-        const output = document.getElementById("output");
-
-    const onRegister = async function() {
+    const output = document.getElementById("output");
     const titleText = document.getElementById('title').value;
     const descriptionText = document.getElementById('description').value;
     const priorityText = document.getElementById('priority').value;
     const statusText = document.getElementById('status').value;
-    const response = await fetch("/log", {
-        method: "POST",
-        headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json"
-        },
-     
-    });
-    const result = await response.json();
-    if (result.error) {
-        output.innerHTML = `<strong>Error: ${result.error.routine}</strong>`;
-    } else {
-        output.innerHTML = "Current Tickets.";
-    }
+    
+    const send = async function(buttonId) {
+        const response = await fetch("/dashboard", {
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                id: buttonId
+            })
+        
+        });
+        const result = await response.json();
+        if (result.error) {
+            output.innerHTML = `<strong>Error: ${result.error.routine}</strong>`;
+        } else {
+            output.innerHTML = "Current Tickets.";
+        }
     };
-        </script>
+
+    const editTicket = async function(id) {
+        const response = await fetch("/dashboard", {
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                ticketId: id
+            })
+        
+        });
+        const result = await response.json();
+        if (result.error) {
+            output.innerHTML = `<strong>Error: ${result.error.routine}</strong>`;
+        } else if (result.editTicket) {
+
+            output.innerHTML = "Editing Ticket";
+            
+            document.getElementById("title").setAttribute('value', `${result.editTicket.title}`);
+            document.getElementById("description").setAttribute('value', `${result.editTicket.description}`);
+            document.getElementById("priority").setAttribute('value', `${result.editTicket.priority}`);
+            document.getElementById("status").setAttribute('value', `${result.editTicket.status}`);
+        }
+    };
+    </script>
 
     </div>
 

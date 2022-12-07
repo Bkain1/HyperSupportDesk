@@ -288,9 +288,8 @@ express()
 
     .get("/dashboard", async (req, res) => {
        
-
-            // Test if the user is not logged in
-            if (req.session.user) {
+        // Test if the user is not logged in
+        if (req.session.user) {
 
             // Test if user is a supporter/admin
             // If so, let them see everything otherwise just show them their tickets
@@ -316,6 +315,7 @@ express()
             const response = {
                 "tickets":tickets ? tickets.rows : null
             };
+
             res.render("pages/dashboard.ejs", response);
             client.release();
             
@@ -326,60 +326,66 @@ express()
                 message: "Please login first."
             });
         }
-
-
     })
     
     .post("/dashboard", async (req, res) => {
-        try {
-
-            const client = await pool.connect();
-            const title = req.body.title;
-            const description = req.body.description;
-            const author = escapeCharacters(req.session.user.email).trim();
-            const priority = req.body.priority;
-            const status = req.body.status;
-            const insertSql = `INSERT INTO tickets (title, description, author, priority, status)
-                VALUES ($1, $2, $3, $4, $5)
-                RETURNING id as newTicket;`;
-
-            const insert = await client.query(insertSql, [title, description, author, priority, status]);
-            
-            const response = {
-                newTicket: insert ? insert.rows[0] : null
-            };
-
-            res.redirect("/dashboard");
-            client.release();
-            
-        } catch (err) {
-
-            console.error(err);
-
-        }
-    })
-
-    .get("/admin", async (req, res) => {
-
-        const usertype = req.session.user.usertype;
-        if (usertype >= 1) {
-
-            // Render the admin console          
-            res.render("pages/admin.ejs", {
-                user: req.session.user
-            });
-        
-        } else {
-
-        // Render the page with the user information
-        res.render("pages/welcome.ejs", {
-            user: req.session.user,
-            message: "You do not have access to the admin page."
+        res.set({
+            "Content-Type": "application/json"
         });
 
+        const ticketId = req.body.ticketId;
+        
+        if (ticketId !== undefined) {
 
-       }
+            const client = await pool.connect()
+            const ticketsSql = "SELECT * FROM tickets WHERE id = $1;";
+            await client.query(ticketsSql, [ticketId], async (error, result) => {
+                if (error) {
+                    console.error(error);
+                }
 
+                return res.json({
+                    editTicket: {
+                        title: result.rows[0].title,
+                        description: result.rows[0].description,
+                        priority: result.rows[0].priority,
+                        status: result.rows[0].status
+                    }
+                });
+                
+            });
+
+        } else {
+          
+            try {
+
+                const client = await pool.connect();
+
+                const title = req.body.title;
+                const description = req.body.description;
+                const author = escapeCharacters(req.session.user.email).trim();
+                const priority = req.body.priority;
+                const status = req.body.status;
+
+                const insertSql = `INSERT INTO tickets (title, description, author, priority, status)
+                    VALUES ($1, $2, $3, $4, $5)
+                    RETURNING id as newTicket;`;
+
+                const insert = await client.query(insertSql, [title, description, author, priority, status]);
+                
+                const response = {
+                    newTicket: insert ? insert.rows[0] : null
+                };
+
+                res.redirect("/dashboard");
+                client.release();
+                
+            } catch (err) {
+
+                console.error(err);
+
+            }
+        }
     })
 
     .post("/admin", async (req, res) => {
