@@ -64,7 +64,6 @@ express()
            req.session.user = false;
            res.render("pages/login.ejs", {
             message: "You are now logged out."
-            
         });
 
            } else {
@@ -337,7 +336,7 @@ express()
         
         if (ticketId !== undefined) {
 
-            const client = await pool.connect()
+            const client = await pool.connect();
             const ticketsSql = "SELECT * FROM tickets WHERE id = $1;";
             await client.query(ticketsSql, [ticketId], async (error, result) => {
                 if (error) {
@@ -346,14 +345,56 @@ express()
 
                 return res.json({
                     editTicket: {
+                        id: result.rows[0].id,
                         title: result.rows[0].title,
                         description: result.rows[0].description,
                         priority: result.rows[0].priority,
                         status: result.rows[0].status
                     }
                 });
-                
             });
+            client.release();
+
+        } else if (req.body.saveTicket !== undefined) {
+            try {
+
+                var ticketsSql;
+                var tickets;
+
+                const saveTicket = req.body.saveTicket;
+
+                const client = await pool.connect();
+                ticketsSql = "UPDATE tickets SET title = $2, description = $3, priority = $4, status = $5 WHERE id = $1;";
+                await client.query(ticketsSql, [saveTicket.id, saveTicket.title, saveTicket.description, saveTicket.priority, saveTicket.status]);
+
+                const usertype = req.session.user.usertype;
+           
+                // Check user's id
+                if (usertype >= 1) {
+
+                    ticketsSql = "SELECT * FROM tickets ORDER BY id ASC;";
+                    tickets = await client.query(ticketsSql);
+
+                } else {
+                
+                    ticketsSql = "SELECT * FROM tickets WHERE author = $1 ORDER BY id ASC;";
+                    tickets = await client.query(ticketsSql, [escapeCharacters(req.session.user.email).trim()]);
+                
+                }
+
+                const response = {
+                    "tickets":tickets ? tickets.rows : null
+                };
+
+                res.json(response);
+                client.release();
+            
+
+            } catch (err) {
+
+                console.error(err);
+
+            }
 
         } else {
           

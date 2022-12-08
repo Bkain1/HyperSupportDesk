@@ -66,14 +66,15 @@
                         <option value="Completed">Completed</option>
                     </select>
                 </div>
-                <button type="submit">Create Ticket</button>
+                <button id="submit" type="submit">Create Ticket</button>
             </form>
+            <button id="save">Save Changes</button>
 
 
 
         <p id="output"></p><br><br><br>
+        <div id="center">
         <p>View Tickets</p>
-        <div class="center">
         <table style="width:auto" id="ticket">
             <tr>
                 <td>ID</td>
@@ -115,10 +116,18 @@
 
         <script>
     const output = document.getElementById("output");
-    const titleText = document.getElementById('title').value;
-    const descriptionText = document.getElementById('description').value;
-    const priorityText = document.getElementById('priority').value;
-    const statusText = document.getElementById('status').value;
+    const title = document.getElementById('title');
+    const description = document.getElementById('description');
+    const priority = document.getElementById('priority');
+    const status = document.getElementById('status');
+
+    const submit = document.getElementById("submit");
+    const save = document.getElementById("save");
+
+    const center = document.getElementById("center");
+
+    // Don't display the save button
+    save.style.display = "none";
     
     const send = async function(buttonId) {
         const response = await fetch("/dashboard", {
@@ -158,13 +167,48 @@
         } else if (result.editTicket) {
 
             output.innerHTML = "Editing Ticket";
-            
-            document.getElementById("title").setAttribute('value', `${result.editTicket.title}`);
-            document.getElementById("description").setAttribute('value', `${result.editTicket.description}`);
-            document.getElementById("priority").setAttribute('value', `${result.editTicket.priority}`);
-            document.getElementById("status").setAttribute('value', `${result.editTicket.status}`);
+
+            save.style.display = "initial";
+            submit.style.display = "none";
+
+            center.style.display = "none";
+
+            title.setAttribute('value', `${result.editTicket.title}`);
+            description.setAttribute('value', `${result.editTicket.description}`);
+            priority.setAttribute('value', `${result.editTicket.priority}`);
+            status.setAttribute('value', `${result.editTicket.status}`);
+
+            save.onclick = function() {
+                saveTicket(`${result.editTicket.id}`);
+            }
         }
-    };
+    }
+
+    const saveTicket = async function(id) {
+        const response = await fetch("/dashboard", {
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                saveTicket: {
+                    id: id,
+                    title: title.value,
+                    description: description.value,
+                    priority: priority.value,
+                    status: status.value
+                }
+            })
+        });
+
+        const result = await response.json();
+        if (result.error) {
+            output.innerHTML = `<strong>Error: ${result.error.routine}</strong>`;
+        } else {
+            await location.reload();
+        }
+    }
     </script>
 
     </div>
