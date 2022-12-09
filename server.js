@@ -358,9 +358,9 @@ express()
                 return res.json({
                     editTicket: {
                         id: result.rows[0].id,
-                        title: result.rows[0].title,
-                        description: result.rows[0].description,
-                        priority: result.rows[0].priority
+                        title: unescapeCharacters(result.rows[0].title),
+                        description: unescapeCharacters(result.rows[0].description),
+                        priority: unescapeCharacters(result.rows[0].priority)
                     }
                 });
             });
@@ -376,9 +376,21 @@ express()
 
                 const client = await pool.connect();
 
+                id = saveTicket.id;
+                title = escapeCharacters(saveTicket.title).trim();
+                description = escapeCharacters(saveTicket.description).trim();
+                priority = escapeCharacters(saveTicket.priority).trim();
+
+                if (title == "" || description == "" || priority == "") {
+                    return res.json({
+                        saveEmpty: "saveEmpty"
+                    });
+                }
+
+
                 // Save the changes to the database
                 ticketsSql = "UPDATE tickets SET title = $2, description = $3, priority = $4 WHERE id = $1;";
-                await client.query(ticketsSql, [saveTicket.id, saveTicket.title, saveTicket.description, saveTicket.priority]);
+                await client.query(ticketsSql, [id, title, description, priority]);
 
                 // Check if the user is logged in
                 if (req.session.user) {

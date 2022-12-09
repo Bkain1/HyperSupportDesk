@@ -90,11 +90,11 @@
         tickets.forEach(function(t) { %>
             <tr>
                 <td><%= t.id %></td>
-                <td><%= t.title %></td>
-                <td><%= t.description %></td>
+                <td><%= unescapeCharacters(t.title) %></td>
+                <td><%= unescapeCharacters(t.description) %></td>
                 <td><%= unescapeCharacters(t.author) %></td>
-                <td><%= t.priority %></td>
-                <td><%= t.status %></td>
+                <td><%= unescapeCharacters(t.priority) %></td>
+                <td><%= unescapeCharacters(t.status) %></td>
                 <td><button id="<%= t.id %>" onclick="javascript:editTicket(<%= t.id %>);">Edit ticket</button></td>
             </tr>
 
@@ -103,9 +103,9 @@
     </div>
 
 
-        </main>
-
-        <script>
+    </main>
+    </div>
+<script>
     const output = document.getElementById("output");
     const title = document.getElementById('title');
     const description = document.getElementById('description');
@@ -130,9 +130,9 @@
             body: JSON.stringify({
                 id: buttonId
             })
-        
         });
         const result = await response.json();
+
         if (result.error) {
             output.innerHTML = `<strong>Error: ${result.error.routine}</strong>`;
         } else {
@@ -150,9 +150,9 @@
             body: JSON.stringify({
                 ticketId: id
             })
-        
         });
         const result = await response.json();
+
         if (result.error) {
             output.innerHTML = `<strong>Error: ${result.error.routine}</strong>`;
         } else if (result.editTicket) {
@@ -190,17 +190,17 @@
                 }
             })
         });
-
         const result = await response.json();
+
         if (result.error) {
             output.innerHTML = `<strong>Error: ${result.error.routine}</strong>`;
+        } else if (result.saveEmpty) {
+            output.innerHTML = "Please enter a value in all fields.";
         } else {
             location.reload();
         }
     }
-    </script>
-
-    </div>
+</script>
 
 </body>
 
