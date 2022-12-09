@@ -298,29 +298,36 @@ express()
 
             const usertype = req.session.user.usertype;
             const client = await pool.connect();
+
             // Check user's id
+            // usertype 0 = regular user
+            // usertype 1 = supporter
+            // usertype 2 = admin
             if (usertype >= 1) {
 
+                // Select all tickets
                 ticketsSql = "SELECT * FROM tickets ORDER BY id ASC;";
                 tickets = await client.query(ticketsSql);
 
             } else {
             
+                // Select all tickets sent from the user
                 ticketsSql = "SELECT * FROM tickets WHERE author = $1 ORDER BY id ASC;";
                 tickets = await client.query(ticketsSql, [escapeCharacters(req.session.user.email).trim()]);
             
             }
 
+            // Return the list of tickets
             const response = {
-                "tickets":tickets ? tickets.rows : null
+                "tickets": tickets ? tickets.rows : null
             };
 
             res.render("pages/dashboard.ejs", response);
             client.release();
             
-            } else {
+        } else {
 
-            // Redirect the user
+            // User is not logged in, redirect
             return res.render("pages/login.ejs", {
                 message: "Please login first."
             });
@@ -333,61 +340,81 @@ express()
         });
 
         const ticketId = req.body.ticketId;
+        const saveTicket = req.body.saveTicket;
         
         if (ticketId !== undefined) {
-
+            
+            // See if the user is currently editing a ticket.
             const client = await pool.connect();
+            
+            // Pull the ticket they want to edit
             const ticketsSql = "SELECT * FROM tickets WHERE id = $1;";
             await client.query(ticketsSql, [ticketId], async (error, result) => {
                 if (error) {
                     console.error(error);
                 }
 
+                // Return the ticket info
                 return res.json({
                     editTicket: {
                         id: result.rows[0].id,
                         title: result.rows[0].title,
                         description: result.rows[0].description,
-                        priority: result.rows[0].priority,
-                        status: result.rows[0].status
+                        priority: result.rows[0].priority
                     }
                 });
             });
             client.release();
 
-        } else if (req.body.saveTicket !== undefined) {
+        } else if (saveTicket !== undefined) {
+
+            // See if the user is saving the ticket they are editing.
             try {
 
                 var ticketsSql;
                 var tickets;
 
-                const saveTicket = req.body.saveTicket;
-
                 const client = await pool.connect();
-                ticketsSql = "UPDATE tickets SET title = $2, description = $3, priority = $4, status = $5 WHERE id = $1;";
-                await client.query(ticketsSql, [saveTicket.id, saveTicket.title, saveTicket.description, saveTicket.priority, saveTicket.status]);
 
-                const usertype = req.session.user.usertype;
-           
-                // Check user's id
-                if (usertype >= 1) {
+                // Save the changes to the database
+                ticketsSql = "UPDATE tickets SET title = $2, description = $3, priority = $4 WHERE id = $1;";
+                await client.query(ticketsSql, [saveTicket.id, saveTicket.title, saveTicket.description, saveTicket.priority]);
 
-                    ticketsSql = "SELECT * FROM tickets ORDER BY id ASC;";
-                    tickets = await client.query(ticketsSql);
+                // Check if the user is logged in
+                if (req.session.user) {
+
+                    const usertype = req.session.user.usertype;
+            
+                    // Check user's id
+                    if (usertype >= 1) {
+
+                        // Select all tickets
+                        ticketsSql = "SELECT * FROM tickets ORDER BY id ASC;";
+                        tickets = await client.query(ticketsSql);
+
+                    } else {
+                    
+                        // Select all tickets sent from the user
+                        ticketsSql = "SELECT * FROM tickets WHERE author = $1 ORDER BY id ASC;";
+                        tickets = await client.query(ticketsSql, [escapeCharacters(req.session.user.email).trim()]);
+                    
+                    }
+
+                    // Return the list of tickets
+                    const response = {
+                        "tickets": tickets ? tickets.rows : null
+                    };
+
+                    res.json(response);
+                    client.release();
 
                 } else {
-                
-                    ticketsSql = "SELECT * FROM tickets WHERE author = $1 ORDER BY id ASC;";
-                    tickets = await client.query(ticketsSql, [escapeCharacters(req.session.user.email).trim()]);
-                
+
+                    // User is not logged in, redirect
+                    return res.render("pages/login.ejs", {
+                        message: "Please login first."
+                    });
                 }
-
-                const response = {
-                    "tickets":tickets ? tickets.rows : null
-                };
-
-                res.json(response);
-                client.release();
             
 
             } catch (err) {
@@ -397,22 +424,25 @@ express()
             }
 
         } else {
+
+            // User is creating a ticket
           
             try {
 
                 const client = await pool.connect();
 
-                const title = req.body.title;
-                const description = req.body.description;
+                // Pull the information the user has input, sanitizing for the db
+                const title = escapeCharacters(req.body.title).trim();
+                const description = escapeCharacters(req.body.description).trim();
                 const author = escapeCharacters(req.session.user.email).trim();
-                const priority = req.body.priority;
-                const status = req.body.status;
+                const priority = escapeCharacters(req.body.priority).trim();
 
+                // Create new ticket in db
                 const insertSql = `INSERT INTO tickets (title, description, author, priority, status)
-                    VALUES ($1, $2, $3, $4, $5)
+                    VALUES ($1, $2, $3, $4, 'Waiting')
                     RETURNING id as newTicket;`;
 
-                const insert = await client.query(insertSql, [title, description, author, priority, status]);
+                const insert = await client.query(insertSql, [title, description, author, priority]);
                 
                 const response = {
                     newTicket: insert ? insert.rows[0] : null

@@ -39,7 +39,6 @@
                     
                     tr.hide_all > td, td.hide_all{
                        border: 0;
-                      
                     }
               </style>
                 <div>
@@ -56,13 +55,6 @@
                         <option value="Low">Low</option>
                         <option value="Medium">Medium</option>
                         <option value="High">High</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="status">Status (don't change)</label>
-                    <select name="status" id="status">
-                        <option value="Waiting">Waiting</option>
-                        <option value="Completed">Completed</option>
                     </select>
                 </div>
                 <button id="submit" type="submit">Create Ticket</button>
@@ -175,7 +167,6 @@
             title.setAttribute('value', `${result.editTicket.title}`);
             description.setAttribute('value', `${result.editTicket.description}`);
             priority.setAttribute('value', `${result.editTicket.priority}`);
-            status.setAttribute('value', `${result.editTicket.status}`);
 
             save.onclick = function() {
                 saveTicket(`${result.editTicket.id}`);
@@ -195,8 +186,7 @@
                     id: id,
                     title: title.value,
                     description: description.value,
-                    priority: priority.value,
-                    status: status.value
+                    priority: priority.value
                 }
             })
         });
@@ -205,7 +195,7 @@
         if (result.error) {
             output.innerHTML = `<strong>Error: ${result.error.routine}</strong>`;
         } else {
-            await location.reload();
+            location.reload();
         }
     }
     </script>
