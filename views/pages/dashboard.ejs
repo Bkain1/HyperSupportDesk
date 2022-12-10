@@ -9,6 +9,18 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 
+<%
+function unescapeCharacters(string) {
+    return string.replace(/&quot;/g, '"')
+    .replace(/&#x27;/g, "'")
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&#x2F;/g, '/')
+    .replace(/&#x5C;/g, '\\')
+    .replace(/&#96;/g, '`')
+    .replace(/&amp;/g, '&');
+} %>
+
 
 <body>
     <div id="wrapper">
@@ -24,88 +36,86 @@
                     <li><a href="/quickFixes">QuickFixes</a></li>
                 </ul>
             </nav>
-    </header>
+        </header>
         <main id="hero">
             <h2>HyperSupportDesk - Dashboard</h2>
+            <div id="input">
 
-            <p>You can now create a ticket.</p>
+                <!-- Add Ticket UI Here -->
+                <form action="/dashboard" method="POST">
+                    <div>
+                        <label for="title">Title</label>
+                        <input type="text" id="title" name="title" required>
+                    </div>
+                    <div>
+                        <label for="description">Description</label>
+                        <input type="text" id="description" name="description" required>
+                    </div>
+                    <div>
+                        <label for="priority">Priority</label>
+                        <select name="priority" id="priority">
+                            <option value="Low">Low</option>
+                            <option value="Medium">Medium</option>
+                            <option value="High">High</option>
+                        </select>
+                    </div>
+                    <button id="submit" type="submit">Create Ticket</button>
+                </form>
+                <button id="save">Save Changes</button>
+            </div>
 
-            <!-- Add Ticket UI Here -->
-            <form action="/dashboard" method="POST">
+            <p id="output"></p>
+            <div id="display-ticket">
+                <p>Title: <span id="display-title"></span></p>
+                <p>Author: <span id="display-author"></span></p>
+                <p>Description: <span id="display-description"></span></p>
+                <p>Priority: <span id="display-priority"></span></p>
+                <p>Status: <span id="display-status"></span></p>
+                <button id="mark-complete">Mark Complete</button>
+            </div>
+            <div id="center">
+                <p>View Tickets</p>
+
                 <style type="text/css">
                     table, th, td {
-                     border: 1px solid;
+                        border: 1px solid;
                     }
                     
                     tr.hide_all > td, td.hide_all{
-                       border: 0;
+                        border: 0;
                     }
-              </style>
-                <div>
-                    <label for="title">Title</label>
-                    <input type="text" id="title" name="title" required>
-                </div>
-                <div>
-                    <label for="description">Description</label>
-                    <input type="text" id="description" name="description" required>
-                </div>
-                <div>
-                    <label for="priority">Priority</label>
-                    <select name="priority" id="priority">
-                        <option value="Low">Low</option>
-                        <option value="Medium">Medium</option>
-                        <option value="High">High</option>
-                    </select>
-                </div>
-                <button id="submit" type="submit">Create Ticket</button>
-            </form>
-            <button id="save">Save Changes</button>
-
-
-
-        <p id="output"></p><br><br><br>
-        <div id="center">
-        <p>View Tickets</p>
-        <table style="width:auto" id="ticket">
-            <tr>
-                <td>ID</td>
-                <td>TITLE</td>
-                <td>DESCRIPTION</td>
-                <td>AUTHOR</td>
-                <td>PRIORITY</td>
-                <td>STATUS</td>
-            </tr>
-        <% 
-        function unescapeCharacters(string) {
-            return string.replace(/&quot;/g, '"')
-            .replace(/&#x27;/g, "'")
-            .replace(/&lt;/g, '<')
-            .replace(/&gt;/g, '>')
-            .replace(/&#x2F;/g, '/')
-            .replace(/&#x5C;/g, '\\')
-            .replace(/&#96;/g, '`')
-            .replace(/&amp;/g, '&');
-        }
-    
-        tickets.forEach(function(t) { %>
-            <tr>
-                <td><%= t.id %></td>
-                <td><%= unescapeCharacters(t.title) %></td>
-                <td><%= unescapeCharacters(t.description) %></td>
-                <td><%= unescapeCharacters(t.author) %></td>
-                <td><%= unescapeCharacters(t.priority) %></td>
-                <td><%= unescapeCharacters(t.status) %></td>
-                <td><button id="<%= t.id %>" onclick="javascript:editTicket(<%= t.id %>);">Edit ticket</button></td>
-            </tr>
-
-        <% }); %>
-        </table>
-    </div>
-
-
-    </main>
+                </style>
+                <table style="width:auto" id="table">
+                    <tr>
+                        <td>ID</td>
+                        <td>TITLE</td>
+                        <td>DESCRIPTION</td>
+                        <td>AUTHOR</td>
+                        <td>PRIORITY</td>
+                        <td>STATUS</td>
+                    </tr>
+                <%_ tickets.forEach(function(t) { %>
+                    <tr>
+                        <td><%= t.id %></td>
+                        <td><%= unescapeCharacters(t.title) %></td>
+                        <td><%= unescapeCharacters(t.description) %></td>
+                        <td><%= unescapeCharacters(t.author) %></td>
+                        <td><%= unescapeCharacters(t.priority) %></td>
+                        <td><%= unescapeCharacters(t.status) %></td>
+                        <%_ if (usertype == 0) { _%>
+                        <td><button id="<%= t.id %>" onclick="javascript:editTicket(<%= t.id %>);">Edit ticket</button></td>
+                        <%_ } else { _%>
+                        <td><button id="<%= t.id %>" onclick="javascript:viewTicket(<%= t.id %>);">View ticket</button></td>
+                        <%_ } _%>
+                    </tr>
+                <%_ }); _%>
+                </table>
+            </div>
+        </main>
     </div>
 <script>
+
+    const input = document.getElementById("input");
     const output = document.getElementById("output");
     const title = document.getElementById('title');
     const description = document.getElementById('description');
@@ -114,92 +124,156 @@
 
     const submit = document.getElementById("submit");
     const save = document.getElementById("save");
+    const displayTicket = document.getElementById("display-ticket");
 
     const center = document.getElementById("center");
 
-    // Don't display the save button
+    <%# // Don't display unused elements %>
     save.style.display = "none";
-    
-    const send = async function(buttonId) {
-        const response = await fetch("/dashboard", {
-            method: "POST",
-            headers: {
-                "Accept": "application/json",
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                id: buttonId
-            })
-        });
-        const result = await response.json();
+    displayTicket.style.display = "none";
 
-        if (result.error) {
-            output.innerHTML = `<strong>Error: ${result.error.routine}</strong>`;
-        } else {
-            output.innerHTML = "Current Tickets.";
-        }
-    };
+    <%_ if (usertype == 0) { _%>
+        
+        <%# // Hide these if the user is a supporter or admin.
+            // We don't want them to edit the contents of tickets. _%>
 
-    const editTicket = async function(id) {
-        const response = await fetch("/dashboard", {
-            method: "POST",
-            headers: {
-                "Accept": "application/json",
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                ticketId: id
-            })
-        });
-        const result = await response.json();
+        output.innerHTML = "<p>You can now create a ticket.</p>";
 
-        if (result.error) {
-            output.innerHTML = `<strong>Error: ${result.error.routine}</strong>`;
-        } else if (result.editTicket) {
+        const send = async function(buttonId) {
+            const response = await fetch("/dashboard", {
+                method: "POST",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    id: buttonId
+                })
+            });
+            const result = await response.json();
 
-            output.innerHTML = "Editing Ticket";
+            if (result.error) {
+                output.innerHTML = `<strong>Error: ${result.error.routine}</strong>`;
+            } else {
+                output.innerHTML = "Current Tickets";
+            }
+        };
+            
+        const editTicket = async function(id) {
+            const response = await fetch("/dashboard", {
+                method: "POST",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    viewTicket: {
+                        id: id
+                    }
+                })
+            });
+            const result = await response.json();
 
-            save.style.display = "initial";
-            submit.style.display = "none";
+            if (result.error) {
+                output.innerHTML = `<strong>Error: ${result.error.routine}</strong>`;
+            } else if (result.ticket) {
 
-            center.style.display = "none";
+                output.innerHTML = "Editing Ticket";
 
-            title.setAttribute('value', `${result.editTicket.title}`);
-            description.setAttribute('value', `${result.editTicket.description}`);
-            priority.setAttribute('value', `${result.editTicket.priority}`);
+                save.style.display = "initial";
+                submit.style.display = "none";
 
-            save.onclick = function() {
-                saveTicket(`${result.editTicket.id}`);
+                center.style.display = "none";
+
+                const ticket = result.ticket;
+                title.setAttribute('value', `${ticket.title}`);
+                description.setAttribute('value', `${ticket.description}`);
+                priority.setAttribute('value', `${ticket.priority}`);
+
+                save.onclick = function() {
+                    saveTicket(ticket.id);
+                }
             }
         }
-    }
 
-    const saveTicket = async function(id) {
-        const response = await fetch("/dashboard", {
-            method: "POST",
-            headers: {
-                "Accept": "application/json",
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                saveTicket: {
-                    id: id,
-                    title: title.value,
-                    description: description.value,
-                    priority: priority.value
-                }
-            })
-        });
-        const result = await response.json();
+        const saveTicket = async function(id) {
+            const response = await fetch("/dashboard", {
+                method: "POST",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    saveTicket: {
+                        id: id,
+                        title: title.value,
+                        description: description.value,
+                        priority: priority.value
+                    }
+                })
+            });
+            const result = await response.json();
 
-        if (result.error) {
-            output.innerHTML = `<strong>Error: ${result.error.routine}</strong>`;
-        } else if (result.saveEmpty) {
-            output.innerHTML = "Please enter a value in all fields.";
-        } else {
-            location.reload();
+            if (result.error) {
+                output.innerHTML = `<strong>Error: ${result.error.routine}</strong>`;
+            } else if (result.saveEmpty) {
+                output.innerHTML = "Please enter a value in all fields.";
+            } else {
+                location.reload();
+            }
         }
-    }
+    <%_ } else { _%>
+
+        <%# // Hide unneeded attributes %>
+        input.style.display = "none";
+        
+        <%# // Visible to supporters and admins %>
+        const viewTicket = async function(id) {
+            const response = await fetch("/dashboard", {
+                method: "POST",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    viewTicket: {
+                        id: id
+                    }
+                })
+            });
+            const result = await response.json();
+
+            if (result.error) {
+                output.innerHTML = `<strong>Error: ${result.error.routine}</strong>`;
+            } else if (result.ticket) {
+
+                output.innerHTML = "Viewing Ticket";
+
+                center.style.display = "none";
+                
+                displayTicket.style.display = "initial";
+
+                const displayTitle = document.getElementById("display-title"); 
+                const displayAuthor = document.getElementById("display-author"); 
+                const displayDescription = document.getElementById("display-description"); 
+                const displayPriority = document.getElementById("display-priority"); 
+                const displayStatus = document.getElementById("display-status"); 
+                
+                const ticket = result.ticket;
+                output.innerHTML = `Displaying Ticket #${ticket.id}`;
+                displayTitle.innerHTML = `${ticket.title}`;
+                displayAuthor.innerHTML = `${ticket.author}`;
+                displayDescription.innerHTML = `${ticket.description}`;
+                displayPriority.innerHTML = `${ticket.priority}`;
+                displayStatus.innerHTML = `${ticket.status}`;
+
+                markComplete.onclick = function() {
+                    markComplete(ticket.id);
+                }
+            }
+        }
+
+    <%_ } _%>
 </script>
 
 </body>

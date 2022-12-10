@@ -109,19 +109,19 @@ footer {
 	margin-top: 5em;
 }
 
-#ticket {
+#table {
 	color: black;
 	width: 100%;
 }
 
-#ticket {
+#table {
 	background-color: white;
 	color: black;
 	margin: 0 auto;
 	width: 100%;
 }
 
-#ticket tr:nth-child(even) {
+#table tr:nth-child(even) {
 	background-color: #90ee90;
 }
 
@@ -138,7 +138,6 @@ footer {
 #ticketEntry > td {
 	border-style : hidden;
 	border-collapse:collapse;
-
 }
 
 .requirements {
