@@ -2,70 +2,86 @@
 <html lang="en">
 
 <head>
-    <title>HSD - Login</title>
+    <title>HSD - Admin</title>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/style.css">
 </head>
 
+
 <body>
     <div id="wrapper">
 
         <header>
-            <img src="images/HSDLogo.png" alt="HyperSupportDesk Logo">
-            <nav>
-                <ul>
-                    <li><a href="/">Home</a></li>
-                    <li><a href="/about">About Us</a></li>
-                    <li><a href="/dashboard">Dashboard</a></li>
-                    <li><a href="/login">Login</a></li>
-                    <li><a href="/admin">Admin</a></li>
-                    <li><a href="/quickFixes">QuickFixes</a></li>
-                </ul>
-            </nav>
+            <img src="images/HSDLogo.png" alt="HyperSupportDesk Logo" align="left">
         </header>
 
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/about">About Us</a></li>
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/login">Login</a></li>
+                <li><a href="/admin">Admin</a></li>
+                <li><a href="/quickFixes">QuickFixes</a></li>
+            </ul>
+        </nav><br><br><br>
+
         <main id="hero">
-            <h2>HyperSupportDesk - Admin Console</h2>
+            <h2>HyperSupportDesk - Admin Console</h2><br>
 
-            <p>Here you will be able to edit accounts.</p>
+        <p id="output"></p><br><br><br>
+        <p>View Tickets</p>
+        <div class="center">
+        <table style="width:auto" id="ticket">
+            <tr>
+                <td>ID</td>
+                <td>NAME</td>
+                <td>EMAIL</td>
+                <td>USERTYPE</td>
 
-            <p>Usertype 0 = standard user</p>
-            <p>Usertype 1 = Supportive/Admin user</p>
-
-        <form action="/login" method="POST">
-            <div>
-                <label for="id">User Id</label>
-                <input type="text" id="id" name="id" required>
-            </div>
-            <div>
-                <label for="usertype">Usertype</label>
-                <input type="text" id="usertype" name="usertype" required>
-            </div>
-            <button type="submit">Update</button>
-
-        </form>
-        <p id="output"></p>
-        
-    </main>
+            </tr>
+        <% users.forEach(function(t) { %>
+            <tr>
+                <td><%= t.id %></td>
+                <td><%= t.name %></td>
+                <td><%= t.email %></td>
+                <td><%= t.usertype %></td>
+            </tr>
+        <% }); %>
+        </table>
     </div>
-</body>
-<script>
-    const id = document.getElementById('id');
-    const usertype = document.getElementById('usertype');
-    const response = await fetch("/admin", {
+
+
+        </main>
+
+        <script>
+        const output = document.getElementById("output");
+    const onRegister = async function() {
+    const id = document.getElementById('id').value;
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const usertype = document.getElementById('usertype').value;
+    const response = await fetch("/log", {
         method: "POST",
         headers: {
             "Accept": "application/json",
             "Content-Type": "application/json"
-        }
+        },
+     
     });
-const result = await response.json();
-<% if (locals.message) { %>
-output.innerHTML = '<%= locals.message %><br>';
-<% } %>
+    const result = await response.json();
+    if (result.error) {
+        output.innerHTML = `<strong>Error: ${result.error.routine}</strong>`;
+    } else {
+        output.innerHTML = "Current Users.";
+    }
+    };
+        </script>
 
-</script>
+    </div>
+
+</body>
 
 </html>

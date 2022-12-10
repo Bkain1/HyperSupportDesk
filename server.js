@@ -233,8 +233,8 @@ express()
             const hash = crypto.createHash('sha256');
             hash.update(password);
 
-            const insertSql = `INSERT INTO users (name, email, password, usertype)
-            VALUES ($1, $2, $3, 0)
+            const insertSql = `INSERT INTO users (name, email, password)
+            VALUES ($1, $2, $3)
             RETURNING id as newId;`;
 
             // Insert into database
@@ -259,11 +259,9 @@ express()
         const usertype = req.session.user.usertype;
         if (usertype >= 1) {
 
-            // Render the admin console
-            
-            res.render("pages/admin.ejs", {
-                user: req.session.user
-            });
+            // Redirect the admin console
+
+            res.redirect("/admin");
         
         } else if (req.session.user) {
 
@@ -319,8 +317,7 @@ express()
 
             // Return the list of tickets
             const response = {
-                "tickets": tickets ? tickets.rows : null,
-                "usertype": usertype
+                "tickets": tickets ? tickets.rows : null
             };
 
             res.render("pages/dashboard.ejs", response);
@@ -340,39 +337,36 @@ express()
             "Content-Type": "application/json"
         });
 
-        const viewTicket = req.body.viewTicket;
+        const ticketId = req.body.ticketId;
         const saveTicket = req.body.saveTicket;
         
-        if (viewTicket !== undefined) {
-        // user is currently viewing a ticket.
-        
+        if (ticketId !== undefined) {
+            
+            // See if the user is currently editing a ticket.
             const client = await pool.connect();
             
-            // Pull the ticket they want to view
+            // Pull the ticket they want to edit
             const ticketsSql = "SELECT * FROM tickets WHERE id = $1;";
-            await client.query(ticketsSql, [viewTicket.id], async (error, result) => {
+            await client.query(ticketsSql, [ticketId], async (error, result) => {
                 if (error) {
                     console.error(error);
                 }
 
                 // Return the ticket info
                 return res.json({
-                    ticket: {
+                    editTicket: {
                         id: result.rows[0].id,
-                        author: unescapeCharacters(result.rows[0].author),
                         title: unescapeCharacters(result.rows[0].title),
                         description: unescapeCharacters(result.rows[0].description),
-                        priority: unescapeCharacters(result.rows[0].priority),
-                        status: unescapeCharacters(result.rows[0].status)
+                        priority: unescapeCharacters(result.rows[0].priority)
                     }
                 });
             });
             client.release();
 
-
         } else if (saveTicket !== undefined) {
-        // user is saving the ticket they are editing.
-            
+
+            // See if the user is saving the ticket they are editing.
             try {
 
                 var ticketsSql;
@@ -440,7 +434,8 @@ express()
             }
 
         } else {
-        // User is creating a ticket
+
+            // User is creating a ticket
           
             try {
 
@@ -476,55 +471,27 @@ express()
 
     .get("/admin", async (req, res) => {
 
-        if (req.session.user) {
-
-        const usertype = req.session.user.usertype;
-        if (usertype >= 1) {
-
-            // Render the admin console          
-            res.render("pages/admin.ejs", {
-                user: req.session.user
-            });
-
-            var ticketsSql = "";
-            var tickets;
-
-            const usertype = req.session.user.usertype;
+        try {
             const client = await pool.connect();
-
-            // Select all tickets
-            ticketsSql = "SELECT * FROM tickets ORDER BY id ASC;";
-            tickets = await client.query(ticketsSql);
-
-            // Return the list of tickets
+            const usersSql = "SELECT * FROM users ORDER BY id ASC;";
+            const users = await client.query(usersSql);
             const response = {
-                "tickets": tickets ? tickets.rows : null
+                "users":users ? users.rows : null
             };
+            res.render("pages/admin.ejs", response);
 
-            res.render("pages/dashboard.ejs", response);
-            client.release();
-            
-        
-        } else {
-
-        // Render the page with the user information
-        res.render("pages/welcome.ejs", {
-            user: req.session.user,
-            message: "You do not have access to the admin page."
-        });
-
-
-       }
-
-    } else {
-
-        // User is not logged in, redirect
-        return res.render("pages/login.ejs", {
-            message: "Please login first."
-        });
-    }
+        } catch (err) {
+            console.error(err);
+            res.set({
+                "Content-Type": "application/json"
+            });
+            res.json({
+                error: err
+            });
+        }
 
     })
+
 
     .post("/admin", async (req, res) => {
     }) 
