@@ -20,6 +20,7 @@
                     <li><a href="/about">About Us</a></li>
                     <li><a href="/dashboard">Dashboard</a></li>
                     <li><a href="/login">Login</a></li>
+                    <li><a href="/admin">Admin</a></li>
                     <li><a href="/quickFixes">QuickFixes</a></li>
                 </ul>
             </nav>
@@ -51,15 +52,16 @@
     </div>
 </body>
 <script>
-        const response = await fetch("/log", {
+    const id = document.getElementById('id');
+    const usertype = document.getElementById('usertype');
+    const response = await fetch("/admin", {
         method: "POST",
         headers: {
             "Accept": "application/json",
             "Content-Type": "application/json"
-        },
-     
+        }
     });
-    const result = await response.json();
+const result = await response.json();
 <% if (locals.message) { %>
 output.innerHTML = '<%= locals.message %><br>';
 <% } %>

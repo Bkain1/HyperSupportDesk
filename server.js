@@ -473,6 +473,8 @@ express()
 
     .get("/admin", async (req, res) => {
 
+        if (req.session.user) {
+
         const usertype = req.session.user.usertype;
         if (usertype >= 1) {
 
@@ -480,6 +482,25 @@ express()
             res.render("pages/admin.ejs", {
                 user: req.session.user
             });
+
+            var ticketsSql = "";
+            var tickets;
+
+            const usertype = req.session.user.usertype;
+            const client = await pool.connect();
+
+                // Select all tickets
+                ticketsSql = "SELECT * FROM tickets ORDER BY id ASC;";
+                tickets = await client.query(ticketsSql);
+
+            // Return the list of tickets
+            const response = {
+                "tickets": tickets ? tickets.rows : null
+            };
+
+            res.render("pages/dashboard.ejs", response);
+            client.release();
+            
         
         } else {
 
@@ -492,10 +513,18 @@ express()
 
        }
 
+    } else {
+
+        // User is not logged in, redirect
+        return res.render("pages/login.ejs", {
+            message: "Please login first."
+        });
+    }
+
     })
 
     .post("/admin", async (req, res) => {
-    })   
+    }) 
 
     .get("/about", async (req, res) => {
         res.render("pages/about.ejs");
