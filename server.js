@@ -233,8 +233,8 @@ express()
             const hash = crypto.createHash('sha256');
             hash.update(password);
 
-            const insertSql = `INSERT INTO users (name, email, password)
-            VALUES ($1, $2, $3)
+            const insertSql = `INSERT INTO users (name, email, password, usertype)
+            VALUES ($1, $2, $3, 0)
             RETURNING id as newId;`;
 
             // Insert into database
