@@ -254,6 +254,8 @@ express()
 
     .get("/welcome", async (req, res) => {
 
+        if (req.session.user) {
+        
         // Test if the user is logged in and what their usertype is
 
         const usertype = req.session.user.usertype;
@@ -263,20 +265,25 @@ express()
 
             res.redirect("/admin");
         
-        } else if (req.session.user) {
+        } else {
 
         // Render the page with the user information
         res.render("pages/welcome.ejs", {
             user: req.session.user
         });
 
-       } else {
-
+       }
+        
+        } else {
+    
         // Redirect the user
         res.render("pages/login.ejs", {
             message: "Please login first."
         });
        }
+
+
+
     })
 
     .post("/welcome", async (req, res) => {
@@ -472,22 +479,45 @@ express()
 
     .get("/admin", async (req, res) => {
 
-        try {
-            const client = await pool.connect();
-            const usersSql = "SELECT * FROM users ORDER BY id ASC;";
-            const users = await client.query(usersSql);
-            const response = {
-                "users":users ? users.rows : null
-            };
-            res.render("pages/admin.ejs", response);
+        if (req.session.user) {
 
-        } catch (err) {
-            console.error(err);
-            res.set({
-                "Content-Type": "application/json"
+            const usertype = req.session.user.usertype;
+            if (usertype >= 1) {
+    
+                // They have access
+    
+                try {
+                    const client = await pool.connect();
+                    const usersSql = "SELECT * FROM users ORDER BY id ASC;";
+                    const users = await client.query(usersSql);
+                    const response = {
+                        "users":users ? users.rows : null
+                    };
+                    res.render("pages/admin.ejs", response);
+        
+                } catch (err) {
+                    console.error(err);
+                    res.set({
+                        "Content-Type": "application/json"
+                    });
+                    res.json({
+                        error: err
+                    });
+                }
+            
+            } else {
+    
+            // Redirect the user
+            return res.render("pages/login.ejs", {
+                message: "You do not have access to the Admin page!"
             });
-            res.json({
-                error: err
+           }
+
+        } else {
+
+            // User is not logged in, redirect
+            return res.render("pages/login.ejs", {
+                message: "Please login first."
             });
         }
 
