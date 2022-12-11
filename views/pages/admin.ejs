@@ -31,6 +31,34 @@
         <main id="hero">
             <h2>HyperSupportDesk - Admin Console</h2><br>
 
+            <p>Here you will be able to edit accounts.<br>
+            Select a user id and what role you want to designate to it.<br>
+            To avoid problems, do not update a usertype to the number it already is set to.</p>
+
+        <form action="/admin" method="POST">
+            <!-- <div>
+                <label for="id">User Id</label>
+                <input type="text" id="id" name="id" required>
+            </div> -->
+            <div>
+                <label for="id">Id</label>
+                <select name="id" id="id">
+                    <% users.forEach(function(t) { %>
+                        <option value="<%= t.id %>"><%= t.id %></option>
+                    <% }); %>
+                </select>
+            </div>
+            <div>
+                <label for="usertype">Usertype</label>
+                <select name="usertype" id="usertype">
+                    <option value="0">0-Regular User</option>
+                    <option value="1">1-Supportive User</option>
+                    <option value="2">2-Admin User</option>
+                </select>
+            </div>
+            <button type="submit">Update</button>
+
+        </form>
         <p id="output"></p><br><br><br>
         <p>View Users</p>
         <div class="center">
@@ -77,6 +105,10 @@
         output.innerHTML = "Current Users.";
     }
     };
+
+<% if (locals.message) { %>
+output.innerHTML = '<%= locals.message %><br>';
+<% } %>
         </script>
 
     </div>
