@@ -7,6 +7,7 @@ const crypto = require("crypto");
 const { Pool } = require("pg");
 const session = require("express-session");
 const { execArgv } = require("process");
+const { response } = require("express");
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: {
@@ -33,6 +34,36 @@ function unescapeCharacters(string) {
     .replace(/&#x5C;/g, '\\')
     .replace(/&#96;/g, '`')
     .replace(/&amp;/g, '&');
+}
+
+async function fetchTickets(client, user) {
+    
+    const usertype = user.usertype;
+    var ticketsSql;
+    var tickets;
+
+    // Check user's id
+    if (usertype >= 1) {
+
+        // Select all tickets
+        ticketsSql = "SELECT * FROM tickets ORDER BY priority, id ASC;";
+        tickets = await client.query(ticketsSql);
+
+    } else {
+    
+        // Select all tickets sent from the user
+        ticketsSql = "SELECT * FROM tickets WHERE author = $1 ORDER BY priority, id ASC;";
+        tickets = await client.query(ticketsSql, [escapeCharacters(user.email).trim()]);
+        
+    }
+
+    var result = {
+        "tickets": tickets.rows,
+        "usertype": usertype
+    }
+
+    // Return the list of tickets
+    return result;
 }
 
 app.use(express.static('public'));
@@ -295,39 +326,11 @@ express()
         // Test if the user is not logged in
         if (req.session.user) {
 
-            // Test if user is a supporter/admin
-            // If so, let them see everything otherwise just show them their tickets
-
-            var ticketsSql = "";
-            var tickets;
-
-            const usertype = req.session.user.usertype;
+            const user = req.session.user;
             const client = await pool.connect();
 
-            // Check user's id
-            // usertype 0 = regular user
-            // usertype 1 = supporter
-            // usertype 2 = admin
-            if (usertype >= 1) {
-
-                // Select all tickets
-                ticketsSql = "SELECT * FROM tickets ORDER BY id ASC;";
-                tickets = await client.query(ticketsSql);
-
-            } else {
-            
-                // Select all tickets sent from the user
-                ticketsSql = "SELECT * FROM tickets WHERE author = $1 ORDER BY id ASC;";
-                tickets = await client.query(ticketsSql, [escapeCharacters(req.session.user.email).trim()]);
-            
-            }
-
             // Return the list of tickets
-            const response = {
-                "tickets": tickets ? tickets.rows : null
-            };
-
-            res.render("pages/dashboard.ejs", response);
+            res.render("pages/dashboard.ejs", await fetchTickets(client, user));
             client.release();
             
         } else {
@@ -345,42 +348,41 @@ express()
             "Content-Type": "application/json"
         });
 
-        const ticketId = req.body.ticketId;
+        const viewTicket = req.body.viewTicket;
         const saveTicket = req.body.saveTicket;
+        const markComplete = req.body.markComplete;
+        const back = req.body.back;
         
-        if (ticketId !== undefined) {
-            
-            // See if the user is currently editing a ticket.
+        if (viewTicket !== undefined) {
+        // user is currently viewing a ticket.
+
             const client = await pool.connect();
-            
-            // Pull the ticket they want to edit
+                
+            // Pull the ticket they want to view
             const ticketsSql = "SELECT * FROM tickets WHERE id = $1;";
-            await client.query(ticketsSql, [ticketId], async (error, result) => {
+            await client.query(ticketsSql, [viewTicket.id], async (error, result) => {
                 if (error) {
                     console.error(error);
                 }
-
+                
                 // Return the ticket info
                 return res.json({
-                    editTicket: {
+                    ticket: {
                         id: result.rows[0].id,
+                        author: unescapeCharacters(result.rows[0].author),
                         title: unescapeCharacters(result.rows[0].title),
                         description: unescapeCharacters(result.rows[0].description),
-                        priority: unescapeCharacters(result.rows[0].priority)
+                        priority: unescapeCharacters(result.rows[0].priority),
+                        status: unescapeCharacters(result.rows[0].status)
                     }
                 });
             });
             client.release();
 
         } else if (saveTicket !== undefined) {
+        // user is saving the ticket they are editing.
 
-            // See if the user is saving the ticket they are editing.
             try {
-
-                var ticketsSql;
-                var tickets;
-
-                const client = await pool.connect();
 
                 id = saveTicket.id;
                 title = escapeCharacters(saveTicket.title).trim();
@@ -393,6 +395,7 @@ express()
                     });
                 }
 
+                const client = await pool.connect();
 
                 // Save the changes to the database
                 ticketsSql = "UPDATE tickets SET title = $2, description = $3, priority = $4 WHERE id = $1;";
@@ -401,30 +404,9 @@ express()
                 // Check if the user is logged in
                 if (req.session.user) {
 
-                    const usertype = req.session.user.usertype;
-            
-                    // Check user's id
-                    if (usertype >= 1) {
+                    const user = req.session.user;
 
-                        // Select all tickets
-                        ticketsSql = "SELECT * FROM tickets ORDER BY id ASC;";
-                        tickets = await client.query(ticketsSql);
-
-                    } else {
-                    
-                        // Select all tickets sent from the user
-                        ticketsSql = "SELECT * FROM tickets WHERE author = $1 ORDER BY id ASC;";
-                        tickets = await client.query(ticketsSql, [escapeCharacters(req.session.user.email).trim()]);
-                    
-                    }
-
-                    // Return the list of tickets
-                    const response = {
-                        "tickets": tickets ? tickets.rows : null
-                    };
-
-                    res.json(response);
-                    client.release();
+                    res.json(await fetchTickets(client, user));
 
                 } else {
 
@@ -433,6 +415,7 @@ express()
                         message: "Please login first."
                     });
                 }
+                client.release();
             
 
             } catch (err) {
@@ -441,9 +424,29 @@ express()
 
             }
 
-        } else {
+        } else if (markComplete !== undefined) {
+        // Ticket is being marked as completed
 
-            // User is creating a ticket
+            const user = req.session.user;
+            const client = await pool.connect();
+
+            // Update the status of the ticket
+            sql = "UPDATE tickets SET status = 'Completed' WHERE id = $1";
+            client.query(sql, [markComplete.id]);
+
+            res.json(await fetchTickets(client, user));
+            client.release();
+
+        } else if (back !== undefined) {
+        // Fetch tickets from database and display
+
+            const user = req.session.user;
+            const client = await pool.connect();
+
+            res.json(await fetchTickets(client, user));
+            
+        } else {
+        // User is creating a ticket
           
             try {
 
@@ -460,11 +463,7 @@ express()
                     VALUES ($1, $2, $3, $4, 'Waiting')
                     RETURNING id as newTicket;`;
 
-                const insert = await client.query(insertSql, [title, description, author, priority]);
-                
-                const response = {
-                    newTicket: insert ? insert.rows[0] : null
-                };
+                await client.query(insertSql, [title, description, author, priority]);
 
                 res.redirect("/dashboard");
                 client.release();

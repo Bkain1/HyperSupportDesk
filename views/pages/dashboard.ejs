@@ -67,6 +67,7 @@ function unescapeCharacters(string) {
 
             <p id="output"></p>
             <div id="display-ticket">
+                <button id="back">&leftarrow; Back to Dashboard</button>
                 <p>Title: <span id="display-title"></span></p>
                 <p>Author: <span id="display-author"></span></p>
                 <p>Description: <span id="display-description"></span></p>
@@ -140,6 +141,7 @@ function unescapeCharacters(string) {
 
         output.innerHTML = "<p>You can now create a ticket.</p>";
 
+        <%# // Create ticket %>
         const send = async function(buttonId) {
             const response = await fetch("/dashboard", {
                 method: "POST",
@@ -156,10 +158,11 @@ function unescapeCharacters(string) {
             if (result.error) {
                 output.innerHTML = `<strong>Error: ${result.error.routine}</strong>`;
             } else {
-                output.innerHTML = "Current Tickets";
+                location.reload();
             }
         };
-            
+        
+        <%# // Editing ticket %>
         const editTicket = async function(id) {
             const response = await fetch("/dashboard", {
                 method: "POST",
@@ -181,11 +184,12 @@ function unescapeCharacters(string) {
 
                 output.innerHTML = "Editing Ticket";
 
+                <%# // Hide table and replace create button with save %>
                 save.style.display = "initial";
                 submit.style.display = "none";
-
                 center.style.display = "none";
 
+                <%# // Set values of input elements %>
                 const ticket = result.ticket;
                 title.setAttribute('value', `${ticket.title}`);
                 description.setAttribute('value', `${ticket.description}`);
@@ -197,6 +201,7 @@ function unescapeCharacters(string) {
             }
         }
 
+        <%# // Saving ticket to db %>
         const saveTicket = async function(id) {
             const response = await fetch("/dashboard", {
                 method: "POST",
@@ -248,29 +253,72 @@ function unescapeCharacters(string) {
                 output.innerHTML = `<strong>Error: ${result.error.routine}</strong>`;
             } else if (result.ticket) {
 
+                const ticket = result.ticket;
                 output.innerHTML = "Viewing Ticket";
 
+                <%# // Hide tickets table and show display %>
                 center.style.display = "none";
-                
                 displayTicket.style.display = "initial";
 
-                const displayTitle = document.getElementById("display-title"); 
-                const displayAuthor = document.getElementById("display-author"); 
-                const displayDescription = document.getElementById("display-description"); 
-                const displayPriority = document.getElementById("display-priority"); 
-                const displayStatus = document.getElementById("display-status"); 
                 
-                const ticket = result.ticket;
+                <%# // Display ticket %>
                 output.innerHTML = `Displaying Ticket #${ticket.id}`;
-                displayTitle.innerHTML = `${ticket.title}`;
-                displayAuthor.innerHTML = `${ticket.author}`;
-                displayDescription.innerHTML = `${ticket.description}`;
-                displayPriority.innerHTML = `${ticket.priority}`;
-                displayStatus.innerHTML = `${ticket.status}`;
+                document.getElementById("display-title").innerHTML = `${ticket.title}`;
+                document.getElementById("display-author").innerHTML = `${ticket.author}`;
+                document.getElementById("display-description").innerHTML = `${ticket.description}`;
+                document.getElementById("display-priority").innerHTML = `${ticket.priority}`;
+                document.getElementById("display-status").innerHTML = `${ticket.status}`;
 
-                markComplete.onclick = function() {
+                
+                document.getElementById("back").onclick = function() {
+                    back();
+                }
+
+                document.getElementById("mark-complete").onclick = function() {
                     markComplete(ticket.id);
                 }
+            }
+        }
+
+        const back = async function() {
+            const response = await fetch("/dashboard", {
+                method: "POST",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    back: "back"
+                })
+            });
+            const result = await response.json();
+
+            if (result.error) {
+                output.innerHTML = `<strong>Error: ${result.error.routine}</strong>`;
+            } else {
+                location.reload();
+            }
+        }
+
+        const markComplete = async function(id) {
+            const response = await fetch("/dashboard", {
+                method: "POST",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    markComplete: {
+                        id: id
+                    }
+                })
+            });
+            const result = await response.json();
+
+            if (result.error) {
+                output.innerHTML = `<strong>Error: ${result.error.routine}</strong>`;
+            } else if (result.tickets) {
+                location.reload();
             }
         }
 
