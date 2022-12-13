@@ -19,6 +19,6 @@ CREATE TABLE tickets (
 
 INSERT INTO tickets (title, description, author, priority, status) VALUES ('Test Title', 'Test desc', 'Test author', 'Low', 'Waiting');
 
-UPDATE users SET usertype = 1 WHERE email = 1
+UPDATE users SET usertype = 1 WHERE id = 1;
 
 DELETE FROM tickets WHERE id = 1;
