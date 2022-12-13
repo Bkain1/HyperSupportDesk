@@ -11,11 +11,6 @@ body {
 	margin: 0 auto;
 }
 
-.logout {
-	display: block;
-	text-align: right;
-}
-
 /* Main hero content */
 #hero {
 	display: block;
@@ -49,20 +44,49 @@ a:hover {
 	color: darkgreen;
 }
 
+header {
+	overflow: hidden;
+}
+
 img {
 	padding: 1em 0 0 1em;
-	width: 24rem;
+	width: 30rem;
+}
+
+#logout-section {
+	width: fit-content;
+	float: right;
+}
+
+#logout-section p {
+	padding: 0;
+	margin: 0;
+	font-size: 1em;
+}
+
+#logout-section button {
+	font-family: verdana, arial, sans-serif;
+	font-weight: bold;
+	color: darkgreen;
+	background: none;
+	font-size: 1em;
+	border: 2px solid darkgreen;
+	padding: 0.5em 1em;
+	cursor: pointer;
+}
+
+#logout-section button:hover {
+	color: #11ef21;
 }
 
 nav {
 	float: right;
-	padding-right: 1em;
+	padding: calc(2px + 0.5em) 1em 0 0;
 }
 
 nav ul {
 	list-style: none;
 	align-content: center;
-	padding-top: calc(0.5em + 2px);
 }
 
 nav li {
@@ -188,11 +212,22 @@ footer {
 	
 	nav ul {
 		margin: 0 auto;
-		padding: 0 0 2em 0;
+		padding: 0 0 1em 0;
 		width: fit-content;
 	}
 	
 	nav li {
+		padding: 0.1em;
+		font-size: 20px;
+	}
+
+	#logout-section {
+		width: fit-content;
+		margin: 0 auto;
+		float: none;
+	}
+
+	#logout-section button {
 		padding: 0.1em;
 		font-size: 20px;
 	}

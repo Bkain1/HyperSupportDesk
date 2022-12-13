@@ -30,14 +30,19 @@ function unescapeCharacters(string) {
             <nav>
                 <ul>
                     <li><a href="/">Home</a></li>
-                    <li><a href="/about">About Us</a></li>
                     <li><a href="/dashboard">Dashboard</a></li>
                     <li><a href="/login">Login</a></li>
                     <li><a href="/admin">Admin</a></li>
                     <li><a href="/quickFixes">QuickFixes</a></li>
                 </ul>
+                <% if (user) { %>
+                    <form action="/" method="POST" class="logout" id="logout-section"> 
+                        <p>Logged in as: <%= user.email %> <button id="logoutbutton"type="submit">Logout</button></p>               
+                    </form>
+                <% } %>
             </nav>
         </header>
+        
         <main id="hero">
             <h2>HyperSupportDesk - Dashboard</h2>
             <div id="input">

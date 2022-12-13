@@ -83,6 +83,10 @@ express()
         resave: false,
         saveUninitialized: true
     }))
+    .use(function(req, res, next) {
+        res.locals.user = req.session.user;
+        next();
+    })
     .set("views", path.join(__dirname, "views"))
     .set("view engine", "ejs")
     .get("/", async(req, res) => {
@@ -92,10 +96,8 @@ express()
     .post("/", async(req, res) => {
 
         if (req.session.user) { //Check if logged in
-           req.session.user = false;
-           res.render("pages/login.ejs", {
-            message: "You are now logged out."
-        });
+           req.session.destroy();
+           res.redirect("/login");
 
            } else {
             // Redirect the user
@@ -567,13 +569,6 @@ express()
             });
         }
     }) 
-
-    .get("/about", async (req, res) => {
-        res.render("pages/about.ejs");
-    })
-
-    .post("/about", async (req, res) => {
-    })
 
     .get("/quickFixes", async (req, res) => {
         res.render("pages/quickFixes.ejs");
