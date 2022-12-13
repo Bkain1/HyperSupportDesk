@@ -108,6 +108,7 @@ function unescapeCharacters(string) {
                         <td><button id="<%= t.id %>" onclick="javascript:editTicket(<%= t.id %>);">Edit ticket</button></td>
                         <%_ } else { _%>
                         <td><button id="<%= t.id %>" onclick="javascript:viewTicket(<%= t.id %>);">View ticket</button></td>
+                        <td><button id="<%= t.id %>" onclick="javascript:removeTicket(<%= t.id %>);">Remove ticket</button></td>
                         <%_ } _%>
                     </tr>
                 <%_ }); _%>
@@ -127,6 +128,7 @@ function unescapeCharacters(string) {
     const submit = document.getElementById("submit");
     const save = document.getElementById("save");
     const displayTicket = document.getElementById("display-ticket");
+    
 
     const center = document.getElementById("center");
 
@@ -277,6 +279,31 @@ function unescapeCharacters(string) {
                 document.getElementById("mark-complete").onclick = function() {
                     markComplete(ticket.id);
                 }
+            }
+        }
+
+        const removeTicket = async function(id) {
+            const response = await fetch("/dashboard", {
+                method: "POST",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    removeTicket: {
+                        id: id
+                    }
+                })
+            });
+            const result = await response.json();
+            
+            if (result.error) {
+                output.innerHTML = `<strong>Error: ${result.error.routine}</strong>`;
+            } else  if (result.tickets){
+
+                location.reload(true);
+                
+
             }
         }
 

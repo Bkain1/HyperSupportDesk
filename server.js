@@ -349,6 +349,7 @@ express()
         });
 
         const viewTicket = req.body.viewTicket;
+        const removeTicket = req.body.removeTicket;
         const saveTicket = req.body.saveTicket;
         const markComplete = req.body.markComplete;
         const back = req.body.back;
@@ -436,6 +437,23 @@ express()
 
             res.json(await fetchTickets(client, user));
             client.release();
+
+
+        }else if (removeTicket !== undefined) {
+        //Ticket is being removed
+
+        const user = req.session.user;
+        const client = await pool.connect();
+
+        // Update the status of the ticket
+        sql = "DELETE FROM tickets WHERE id = $1";
+        client.query(sql, [removeTicket.id]);
+
+        res.json(await fetchTickets(client, user));
+        client.release();
+        
+
+
 
         } else if (back !== undefined) {
         // Fetch tickets from database and display
