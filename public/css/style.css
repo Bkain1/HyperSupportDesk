@@ -116,10 +116,16 @@ nav a:focus {
 	margin: 50px auto;
 }
 
-dl {
+#quickfixes {
 	color: #000;
 	text-align: left;
 	font-size: 1.25;
+	margin: 0 auto;
+	width: fit-content;
+}
+
+#quickfixes > li {
+	padding-top: 1em;
 }
 
 .center {
