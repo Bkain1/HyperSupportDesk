@@ -200,7 +200,18 @@ function unescapeCharacters(string) {
                 const ticket = result.ticket;
                 title.setAttribute('value', `${ticket.title}`);
                 description.setAttribute('value', `${ticket.description}`);
-                priority.setAttribute('value', `${ticket.priority}`);
+
+                switch (ticket.priority) {
+                    case "Low":
+                        priority.selectedIndex = 0;
+                        break;
+                    case "Medium":
+                        priority.selectedIndex = 1;
+                        break;
+                    case "High":
+                        priority.selectedIndex = 2;
+                        break;    
+                    }
 
                 save.onclick = function() {
                     saveTicket(ticket.id);
