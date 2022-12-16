@@ -78,7 +78,13 @@
                 <td><%= t.id %></td>
                 <td><%= t.name %></td>
                 <td><%= t.email %></td>
-                <td><%= t.usertype %></td>
+                <% if (t.usertype == 2) { %>
+                    <td>Admin User</td>
+                <% } else if (t.usertype == 1) {%>
+                    <td>Supportive User</td>
+                <% } else if (t.usertype == 0) {%>
+                    <td>Regular User</td>
+                <% } %>
             </tr>
         <% }); %>
         </table>

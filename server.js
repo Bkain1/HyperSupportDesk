@@ -548,15 +548,12 @@ express()
             const client = await pool.connect();
             const id = req.body.id;
             const usertype = req.body.usertype;
-            // const updateSql = `UPDATE users SET usertype = $2 WHERE id = $1;
-            //     RETURNING id as updateId;`;
             const updateSql = `UPDATE users SET usertype = $2 WHERE email = $1;`;
-            // client.query('UPDATE users SET ? WHERE id = ?', [{ usertype: usertype }, id])
     
             const update = await client.query(updateSql, [id, usertype]);
 
             client.release();
-            res.redirect("/welcome");
+            res.redirect("/admin");
 
         } catch (err) {
     
