@@ -35,8 +35,8 @@
             <h2>HyperSupportDesk - Admin Console</h2>
 
             <p>Here you will be able to edit accounts.<br>
-            Select a user id and what role you want to designate to it.<br>
-            To avoid problems, do not update a usertype to the number it already is set to.</p>
+                Select a user and the role you want to designate to them.<br>
+                To avoid problems, do not give the same role to a user twice.</p>
 
         <form action="/admin" method="POST">
             <!-- <div>
@@ -44,19 +44,19 @@
                 <input type="text" id="id" name="id" required>
             </div> -->
             <div>
-                <label for="id">Id</label>
+                <label for="id">User</label>
                 <select name="id" id="id">
                     <% users.forEach(function(t) { %>
-                        <option value="<%= t.id %>"><%= t.id %></option>
+                        <option value="<%= t.email %>"><%= t.email %></option>
                     <% }); %>
                 </select>
             </div>
             <div>
                 <label for="usertype">Usertype</label>
                 <select name="usertype" id="usertype">
-                    <option value="0">0-Regular User</option>
-                    <option value="1">1-Supportive User</option>
-                    <option value="2">2-Admin User</option>
+                    <option value="0">Regular User</option>
+                    <option value="1">Supportive User</option>
+                    <option value="2">Admin User</option>
                 </select>
             </div>
             <button type="submit">Update</button>

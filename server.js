@@ -550,7 +550,7 @@ express()
             const usertype = req.body.usertype;
             // const updateSql = `UPDATE users SET usertype = $2 WHERE id = $1;
             //     RETURNING id as updateId;`;
-            const updateSql = `UPDATE users SET usertype = $2 WHERE id = $1;`;
+            const updateSql = `UPDATE users SET usertype = $2 WHERE email = $1;`;
             // client.query('UPDATE users SET ? WHERE id = ?', [{ usertype: usertype }, id])
     
             const update = await client.query(updateSql, [id, usertype]);
