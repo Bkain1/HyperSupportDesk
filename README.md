@@ -22,6 +22,12 @@ This schema creates tables for storing user data.
   <li>Create a new ticket or view a previous tickets.</li>
 </ol>
 
+## Roles
+<ol>
+  <li>Administrators and supporters can both currently view all tickets. They are able to mark tickets as complete but cannot create new tickets. They are also able to delete tickets. They can also access the admin page where they can change a users role.</li>
+  <li>Standard Users can create and edit previous tickets. They are only allowed to access their own tickets.</li>
+</ol>
+
 ## About The Project
 This project was made as a capstone project to demonstrate course competencies.
 The participants are all IT - Software Development students who got a taste of real world development over the span of this project. At the time of starting this assignment, all of the students only had two weeks of prior experience with Node.js.
