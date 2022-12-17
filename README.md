@@ -22,9 +22,8 @@ This schema creates tables for storing user data.
   <li>Create an account by filling out the name, email, and password fields, then hit the register button.</li>
   <li>Navigate to the dashboard after seeing the welcome screen.</li>
   <li>Create a new ticket or view any previous tickets on the dashboard.</li>
+  [HyperSupportDesk]: http://hypersupportdesk.onrender.com
 </ol>
-
-[HyperSupportDesk]: http://hypersupportdesk.onrender.com
 
 ## Roles
 <ol>
