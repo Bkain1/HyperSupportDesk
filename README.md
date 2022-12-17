@@ -17,7 +17,7 @@ This schema creates tables for storing user data.
 
 ## User Instructions
 <ol>
-  <li>Go to [HyperSupportDesk].</li>
+  <li>Go to [link text itself].</li>
   <li>Navigate to the login page and click "Don't have an account?".</li>
   <li>Create an account by filling out the name, email, and password fields, then hit the register button.</li>
   <li>Navigate to the dashboard after seeing the welcome screen.</li>
@@ -35,3 +35,4 @@ This project was made as a capstone project to demonstrate course competencies.
 The participants are all IT - Software Development students who got a taste of real world development over the span of this project. At the time of starting this assignment, all of the students only had two weeks of prior experience with Node.js.
 
 [HyperSupportDesk]: http://hypersupportdesk.onrender.com
+[link text itself]: http://hypersupportdesk.onrender.com
