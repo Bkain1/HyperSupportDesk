@@ -6,6 +6,8 @@ When creating HyperSupportDesk, we created a Node.js application, with the follo
 - dotenv
 - ejs
 - express
+- express-session
+- express-validator
 - path
 - pg
 
