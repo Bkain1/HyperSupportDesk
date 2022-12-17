@@ -17,13 +17,14 @@ This schema creates tables for storing user data.
 
 ## User Instructions
 <ol>
-  <li>Go to [HyperSupportDesk].</li>
+  <li>Go to [HyperSupportDesk][link text itself].</li>
   <li>Navigate to the login page and click "Don't have an account?".</li>
   <li>Create an account by filling out the name, email, and password fields, then hit the register button.</li>
   <li>Navigate to the dashboard after seeing the welcome screen.</li>
   <li>Create a new ticket or view any previous tickets on the dashboard.</li>
-  [HyperSupportDesk]: http://hypersupportdesk.onrender.com
 </ol>
+  [HyperSupportDesk]: http://hypersupportdesk.onrender.com
+  [link text itself]: http://www.reddit.com
 
 ## Roles
 <ol>
