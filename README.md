@@ -17,7 +17,7 @@ This schema creates tables for storing user data.
 
 ## User Instructions
 <ol>
-  <li>Go to [HyperSupportDesk].</li>
+  <li>Go to [HyperSupportDesk].</li>[HyperSupportDesk]
   <li>Navigate to the login page and click "Don't have an account?".</li>
   <li>Create an account by filling out the name, email, and password fields, then hit the register button.</li>
   <li>Navigate to the dashboard after seeing the welcome screen.</li>
