@@ -16,7 +16,6 @@ To create the database needed for HyperSupportDesk, reference <code>schema.sql</
 This schema creates tables for storing user data.
 
 ## User Instructions
-
 <ol>
   <li>Go to https://hypersupportdesk.onrender.com/.</li>
   <li>Navigate to the login page and click "Don't have an account?".</li>
@@ -30,6 +29,10 @@ This schema creates tables for storing user data.
   <li>Administrators and supporters can both currently view all tickets. They are able to mark tickets as complete but cannot create new tickets. They are also able to delete tickets. They can also access the admin page where they can change a users role.</li>
   <li>Standard Users can create and edit previous tickets. They are only allowed to access their own tickets.</li>
 </ol>
+
+## Personal Usage
+This project is priarily for educational purposes only.
+We only ask that you give credit to us if you intend to use this project or code from it.
 
 ## About The Project
 This project was made as a capstone project to demonstrate course competencies.
