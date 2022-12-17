@@ -23,8 +23,6 @@ This schema creates tables for storing user data.
   <li>Navigate to the dashboard after seeing the welcome screen.</li>
   <li>Create a new ticket or view any previous tickets on the dashboard.</li>
 </ol>
-  [HyperSupportDesk]: http://hypersupportdesk.onrender.com
-  [link text itself]: http://www.reddit.com
 
 ## Roles
 <ol>
@@ -35,3 +33,6 @@ This schema creates tables for storing user data.
 ## About The Project
 This project was made as a capstone project to demonstrate course competencies.
 The participants are all IT - Software Development students who got a taste of real world development over the span of this project. At the time of starting this assignment, all of the students only had two weeks of prior experience with Node.js.
+
+  [HyperSupportDesk]: http://hypersupportdesk.onrender.com
+  [link text itself]: http://www.reddit.com
