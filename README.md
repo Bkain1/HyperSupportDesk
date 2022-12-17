@@ -17,11 +17,11 @@ This schema creates tables for storing user data.
 
 ## User Instructions
 <ol>
-  <li>Open the site.</li>
-  <li>Navigate to the login page.</li>
-  <li>Create an account by filling out the name, email, and password fields.</li>
-  <li>Navigate to the dashboard.</li>
-  <li>Create a new ticket or view a previous tickets.</li>
+  <li>Go to [HyperSupportDesk].</li>
+  <li>Navigate to the login page and click "Don't have an account?".</li>
+  <li>Create an account by filling out the name, email, and password fields, then hit the register button.</li>
+  <li>Navigate to the dashboard after seeing the welcome screen.</li>
+  <li>Create a new ticket or view any previous tickets on the dashboard.</li>
 </ol>
 
 ## Roles
@@ -33,3 +33,5 @@ This schema creates tables for storing user data.
 ## About The Project
 This project was made as a capstone project to demonstrate course competencies.
 The participants are all IT - Software Development students who got a taste of real world development over the span of this project. At the time of starting this assignment, all of the students only had two weeks of prior experience with Node.js.
+
+[HyperSupportDesk]: https://hypersupportdesk.onrender.com
